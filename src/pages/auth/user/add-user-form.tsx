@@ -83,7 +83,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     {
       manual: true,
       refreshOnWindowFocus: false,
-      onSuccess(e) {
+      onSuccess(e: any) {
         setHuanleUsers(transformTreeData(e.data))
       },
     }
@@ -106,7 +106,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     () => getRoleListRequest(),
     {
       manual: true,
-      onSuccess(e) {
+      onSuccess(e: any) {
         setRoleList(e.list)
       },
     }

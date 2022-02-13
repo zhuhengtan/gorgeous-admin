@@ -1,7 +1,7 @@
 import { ApiList } from './type'
 
 const apiList: ApiList = {
-  login: 'POST /api/login',
+  login: 'POST /api/auth/login',
   loginByLark: 'POST /api/login-feishu',
 
   // 用户管理

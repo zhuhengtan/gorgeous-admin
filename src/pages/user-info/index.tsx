@@ -18,20 +18,24 @@ const {
 const UserInfo: React.FC = () => {
   const { t } = useTranslation()
   const history = useHistory()
-  const [, setToken] = useLocalStorageState<string>('TOKEN', '')
+  const [, setToken] = useLocalStorageState<string>('TOKEN', {
+    defaultValue: '',
+  })
   const [user, setUser] = useLocalStorageState<UserInfo>('USER_INFO', {
-    id: 0,
-    name: '',
-    email: '',
-    user_type: '1',
-    avatar: '',
-    login_time: '',
-    status: 0,
-    remark: '',
-    role_id: 0,
-    role_name: '',
-    setting: '',
-    projects: 0,
+    defaultValue: {
+      id: 0,
+      name: '',
+      email: '',
+      user_type: '1',
+      avatar: '',
+      login_time: '',
+      status: 0,
+      remark: '',
+      role_id: 0,
+      role_name: '',
+      setting: '',
+      projects: 0,
+    },
   })
 
   const [showFormDialog, setShowFormDialog] = useState(false)

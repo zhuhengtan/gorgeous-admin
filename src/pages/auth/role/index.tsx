@@ -1,4 +1,4 @@
-import { useRequest } from 'ahooks'
+import { usePagination, useRequest } from 'ahooks'
 import { Button, Popconfirm, Space, Table, Tag } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -24,21 +24,14 @@ const Roles: React.FC = () => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false)
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0)
 
-  const { run: getRoles, loading: getLoading, pagination } = useRequest(
+  const { run: getRoles, loading: getLoading, pagination } = usePagination(
     ({ current, pageSize }) =>
       getRolesRequest({ current_page: current, page_size: pageSize }),
     {
-      paginated: true,
       manual: true,
-      throttleInterval: 500,
-      formatResult(e) {
-        return {
-          list: e.list,
-          total: (e.page_info && e.page_info.total_count) || e.list.length,
-        }
-      },
+      throttleWait: 500,
       onSuccess(e) {
-        setRoles(e as any)
+        setRoles(e.list as any)
       },
     }
   )

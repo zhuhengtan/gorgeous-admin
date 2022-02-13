@@ -8,7 +8,9 @@ import { languageMap } from '@/utils'
 
 const GlobalLan: FC = () => {
   const { i18n } = useTranslation()
-  const [language, setLanguage] = useLocalStorageState('LANGUAGE', 'zh')
+  const [language, setLanguage] = useLocalStorageState('LANGUAGE', {
+    defaultValue: 'zh',
+  })
   const changeHandle = useCallback(
     (lan: string) => {
       i18n.changeLanguage(lan)

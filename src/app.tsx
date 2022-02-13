@@ -12,8 +12,12 @@ import { renderRoutes } from '@/routes/render-routes'
 import { languageMap } from './utils'
 
 function App() {
-  const [language] = useLocalStorageState('LANGUAGE', 'zh')
-  const [token] = useLocalStorageState('TOKEN', '')
+  const [language] = useLocalStorageState('LANGUAGE', {
+    defaultValue: 'zh',
+  })
+  const [token] = useLocalStorageState('TOKEN', {
+    defaultValue: '',
+  })
   const history = useHistory()
   // 监听登录状态，退出登录或登录过期，只用清空cookie中和localStorage中的token即可
   useEffect(() => {

@@ -19,14 +19,16 @@ function Login() {
   const history = useHistory()
   const [form] = Form.useForm()
   const params = getHrefParam()
-  const [, setToken] = useLocalStorageState('TOKEN', '')
+  const [, setToken] = useLocalStorageState('TOKEN', {
+    defaultValue: '',
+  })
   const [, setUserInfo] = useLocalStorageState('USER_INFO', {})
 
   const loginSuccess = useCallback(
     (loginRes) => {
       setCookie('token', loginRes.token)
       setToken(loginRes.token)
-      setUserInfo(loginRes.user_info)
+      setUserInfo(loginRes.userInfo)
       if (params.redirect) {
         history.push(params.redirect as string)
       } else {

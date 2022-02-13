@@ -8,10 +8,14 @@ const CustomAvatar: FC = () => {
   const { t } = useTranslation()
   const history = useHistory()
 
-  const [, setToken] = useLocalStorageState<string>('TOKEN', '')
+  const [, setToken] = useLocalStorageState<string>('TOKEN', {
+    defaultValue: '',
+  })
   const [userInfo, setUserInfo] = useLocalStorageState<UserInfo | string>(
     'USER_INFO',
-    ''
+    {
+      defaultValue: '',
+    },
   )
 
   const goToUserInfo = useCallback(() => {

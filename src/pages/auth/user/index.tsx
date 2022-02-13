@@ -1,6 +1,6 @@
 import './index.less'
 
-import { useRequest } from 'ahooks'
+import { usePagination, useRequest } from 'ahooks'
 import { Button, Input, Popconfirm, Row, Select, Space, Table, Tag } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,7 +42,7 @@ const Users: React.FC = () => {
   const [addPanelVisible, setAddPanelVisible] = useState<boolean>(false)
   const [roleList, setRoleList] = useState([])
 
-  const { run: getUsers, loading: getLoading, pagination } = useRequest(
+  const { run: getUsers, loading: getLoading, pagination } = usePagination(
     ({ current, pageSize }, filters) =>
       getUsersRequest({
         current_page: current,
@@ -50,17 +50,10 @@ const Users: React.FC = () => {
         ...filters,
       }),
     {
-      paginated: true,
       manual: true,
-      throttleInterval: 500,
-      formatResult(e) {
-        return {
-          list: e.user_list,
-          total: e.page_info.total_count,
-        }
-      },
+      throttleWait: 500,
       onSuccess(e) {
-        setUsers(e as any)
+        setUsers(e.list as any)
       },
     }
   )
@@ -93,7 +86,7 @@ const Users: React.FC = () => {
     () => getRoleListRequest(),
     {
       manual: true,
-      onSuccess(e) {
+      onSuccess(e: any) {
         setRoleList(e.list)
       },
     }
@@ -104,7 +97,7 @@ const Users: React.FC = () => {
     {
       manual: true,
       onSuccess() {
-        getUsers({ current: pagination.current, pageSize: pagination.pageSize })
+        getUsers({ current: pagination.current, pageSize: pagination.pageSize }, {})
       },
     }
   )

@@ -39,7 +39,9 @@ const CustomLayout = (props: RouteConfig) => {
   const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
 
   // 如果没有登录，跳转登录页
-  const [token] = useLocalStorageState('TOKEN', '')
+  const [token] = useLocalStorageState('TOKEN', {
+    defaultValue: ''
+  })
   useEffect(() => {
     if (!token && window.location.href.indexOf('login') < 0) {
       history.push('/login')
@@ -171,11 +173,11 @@ const CustomLayout = (props: RouteConfig) => {
     },
   })
 
-  useEffect(() => {
-    if (token) {
-      getUserAuth()
-    }
-  }, [getUserAuth, token])
+  // useEffect(() => {
+  //   if (token) {
+  //     getUserAuth()
+  //   }
+  // }, [getUserAuth, token])
 
   const filterRoutersByPermission = useCallback(
     (routers: RouteConfig[]) => {

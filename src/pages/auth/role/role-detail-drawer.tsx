@@ -123,17 +123,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
     (roldId) => getRoleDetailRequest({ id: roldId }),
     {
       manual: true,
-      formatResult(e) {
-        return {
-          id: e.id,
-          name: e.name,
-          role_type: e.role_type,
-          description: e.description,
-          auth: transformRoleAuthData(e.auth),
-          checkedNumberKeys: getCheckedRoleAuth(e.auth),
-        }
-      },
-      onSuccess(e) {
+      onSuccess(e: any) {
         setRoleDetail(e)
         form.setFieldsValue({
           id: e.id,
@@ -152,10 +142,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
     () => getAuthRequest(),
     {
       manual: true,
-      formatResult(e) {
-        return transformRoleAuthData(e)
-      },
-      onSuccess(e) {
+      onSuccess(e: any) {
         setAuthList(e)
         setSelecetedAuthIds([])
         form.setFieldsValue({
