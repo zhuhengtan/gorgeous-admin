@@ -20,10 +20,16 @@ npm start
 ---------
 ## todo list：
 
-- [x] 登录模块
-- [x] 环境配置
-- [ ] 接口管理
-- [ ] 页面管理
-- [ ] 页面权限管理
-- [ ] 用户管理
-- [ ] mock数据（用于自己搭建后端时演示）
+✅ 登录模块
+
+✅ 环境配置
+
+✅ 页面管理
+
+✅ 页面权限管理
+
+✅ 用户管理
+
+👨🏻‍💻 [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server)接口对接
+
+👨🏻‍💻 [gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)
