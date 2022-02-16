@@ -1,5 +1,7 @@
 import { useRequest } from 'ahooks'
-import { Button, Drawer, Form, Input, Spin, Tabs, Tree } from 'antd'
+import {
+  Button, Drawer, Form, Input, Spin, Tabs, Tree,
+} from 'antd'
 import React, {
   Dispatch,
   SetStateAction,
@@ -47,7 +49,9 @@ interface RoleDetail {
 }
 
 const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
-  const { id, visible, setVisible, onSuccess } = props
+  const {
+    id, visible, setVisible, onSuccess,
+  } = props
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [role, setRoleDetail] = useState<RoleDetail | null>(null)
@@ -82,11 +86,10 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
       if (
         !Object.prototype.hasOwnProperty.call(
           page[one.module_name],
-          one.page_name
+          one.page_name,
         )
       ) {
-        page[one.module_name][one.page_name] =
-          treeData[moduleIndex as any].children.length
+        page[one.module_name][one.page_name] = treeData[moduleIndex as any].children.length
         treeData[moduleIndex as any].children.push({
           title: t(one.page_name),
           key: one.element_key ? `${one.module_name}|${one.page_name}` : one.id,
@@ -132,10 +135,10 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
         })
         setCheckedKeys(e.checkedNumberKeys)
         setSelecetedAuthIds(
-          e.checkedNumberKeys.filter((item: any) => typeof item === 'number')
+          e.checkedNumberKeys.filter((item: any) => typeof item === 'number'),
         )
       },
-    }
+    },
   )
 
   const { run: getAuthList, loading: getAuthLoading } = useRequest(
@@ -150,7 +153,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           description: '',
         })
       },
-    }
+    },
   )
 
   const { run: updateRole, loading: updateLoading } = useRequest(
@@ -162,7 +165,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           onSuccess()
         }
       },
-    }
+    },
   )
 
   const { run: addRole, loading: addLoading } = useRequest(
@@ -174,7 +177,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           onSuccess()
         }
       },
-    }
+    },
   )
 
   const onClickSubmit = useCallback(async () => {
@@ -200,7 +203,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
   const onCheck = useCallback(
     (
       value: React.Key[] | { checked: React.Key[]; halfChecked: React.Key[] },
-      info: any
+      info: any,
     ) => {
       setCheckedKeys(value as React.Key[])
       const tmp: number[] = []
@@ -211,7 +214,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
       })
       setSelecetedAuthIds(tmp)
     },
-    []
+    [],
   )
 
   useEffect(() => {
@@ -232,7 +235,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
       placement="right"
       width={600}
       onClose={() => setVisible(false)}
-      footer={
+      footer={(
         <Button
           type="primary"
           size="small"
@@ -241,7 +244,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
         >
           {t('Submit')}
         </Button>
-      }
+      )}
     >
       <Spin spinning={getDetailLoading || getAuthLoading}>
         <Form
@@ -265,8 +268,8 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
 
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab={t('Basic permission')} key="1">
-            {((role && role.auth && role.auth.length > 0) ||
-              authList.length > 0) && (
+            {((role && role.auth && role.auth.length > 0)
+              || authList.length > 0) && (
               <Tree
                 checkable
                 onCheck={onCheck}

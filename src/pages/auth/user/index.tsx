@@ -1,7 +1,9 @@
 import './index.less'
 
 import { usePagination, useRequest } from 'ahooks'
-import { Button, Input, Popconfirm, Row, Select, Space, Table, Tag } from 'antd'
+import {
+  Button, Input, Popconfirm, Row, Select, Space, Table, Tag,
+} from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -43,19 +45,18 @@ const Users: React.FC = () => {
   const [roleList, setRoleList] = useState([])
 
   const { run: getUsers, loading: getLoading, pagination } = usePagination(
-    ({ current, pageSize }, filters) =>
-      getUsersRequest({
-        current_page: current,
-        page_size: pageSize,
-        ...filters,
-      }),
+    ({ current, pageSize }, filters) => getUsersRequest({
+      current_page: current,
+      page_size: pageSize,
+      ...filters,
+    }),
     {
       manual: true,
       throttleWait: 500,
       onSuccess(e) {
         setUsers(e.list as any)
       },
-    }
+    },
   )
 
   const { run: changeUserStatus } = useRequest(
@@ -65,14 +66,14 @@ const Users: React.FC = () => {
       onSuccess() {
         getUsers({ ...pagination }, filter)
       },
-    }
+    },
   )
 
   const { run: resetPassword } = useRequest(
     (id) => resetPasswordRequest({ id }),
     {
       manual: true,
-    }
+    },
   )
 
   const { run: removeUser } = useRequest((id) => removeUserRequest({ id }), {
@@ -89,7 +90,7 @@ const Users: React.FC = () => {
       onSuccess(e: any) {
         setRoleList(e.list)
       },
-    }
+    },
   )
 
   const { run: changeUserRole } = useRequest(
@@ -99,7 +100,7 @@ const Users: React.FC = () => {
       onSuccess() {
         getUsers({ current: pagination.current, pageSize: pagination.pageSize }, {})
       },
-    }
+    },
   )
 
   const columns = [
@@ -229,7 +230,6 @@ const Users: React.FC = () => {
 
   useEffect(() => {
     getUsers({ current: 1, pageSize: 10 }, filter)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -247,7 +247,7 @@ const Users: React.FC = () => {
                   current: 1,
                   pageSize: pagination.pageSize,
                 },
-                { name: e.currentTarget.value }
+                { name: e.currentTarget.value },
               )
             }}
           />
@@ -277,7 +277,7 @@ const Users: React.FC = () => {
         visible={addPanelVisible}
         setVisible={setAddPanelVisible}
         onSuccess={() => getUsers({ ...pagination }, filter)}
-      ></AddUserForm>
+      />
       {/* <EditForm
         id={id}
         roleId={roleId}

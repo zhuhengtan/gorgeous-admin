@@ -1,6 +1,8 @@
 import './index.less'
 
-import { Button, Form, Input, Switch } from 'antd'
+import {
+  Button, Form, Input, Switch,
+} from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,11 +14,12 @@ interface Props {
   form: FormInstance
   keyDownHandle: (e: any) => Promise<void>
   handlelogin: () => void
-  onClickLarkLogin: () => void
 }
 
 const PCLogin: React.FC<Props> = (props: Props) => {
-  const { form, keyDownHandle, handlelogin, loading, onClickLarkLogin } = props
+  const {
+    form, keyDownHandle, handlelogin, loading,
+  } = props
   const { t } = useTranslation()
 
   const formItemLayout = {
@@ -79,9 +82,6 @@ const PCLogin: React.FC<Props> = (props: Props) => {
                 {t('Login')}
               </Button>
             </Form.Item>
-            <div className="lark-login" onClick={onClickLarkLogin}>
-              <img src="https://techcenter-common-storage.123u.com/public/feishu.png" />
-            </div>
           </Form>
         </div>
       </div>

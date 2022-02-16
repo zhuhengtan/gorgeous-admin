@@ -1,5 +1,7 @@
 import { useRequest } from 'ahooks'
-import { Form, Input, Modal, Select, Tabs, TreeSelect } from 'antd'
+import {
+  Form, Input, Modal, Select, Tabs, TreeSelect,
+} from 'antd'
 import React, {
   Dispatch,
   SetStateAction,
@@ -63,18 +65,16 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
 
   const transformTreeData = useCallback((oldTree: any) => {
     const newTree: any = []
-    oldTree.map((item: any) =>
-      newTree.push({
-        title: item.name,
-        value: item.uid ? item.department_id + item.uid : item.org_id,
-        children:
+    oldTree.map((item: any) => newTree.push({
+      title: item.name,
+      value: item.uid ? item.department_id + item.uid : item.org_id,
+      children:
           item.child_dept || item.dept_users_info
             ? transformTreeData([...item.child_dept, ...item.dept_users_info])
             : [],
-        selectable: !item.org_id,
-        data: item,
-      })
-    )
+      selectable: !item.org_id,
+      data: item,
+    }))
     return newTree
   }, [])
 
@@ -86,7 +86,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
       onSuccess(e: any) {
         setHuanleUsers(transformTreeData(e.data))
       },
-    }
+    },
   )
   const { run: addUser, loading: addLoading } = useRequest(
     (data) => addUserRequest(data),
@@ -99,7 +99,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
         }
         setVisible(false)
       },
-    }
+    },
   )
 
   const { run: getRoleList, loading: getRoleLoading } = useRequest(
@@ -109,7 +109,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
       onSuccess(e: any) {
         setRoleList(e.list)
       },
-    }
+    },
   )
 
   const handleCancel = useCallback(() => {
@@ -135,16 +135,16 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
       }
       getUserInfo(huanleUsers)
     },
-    [huanleUsers, userData]
+    [huanleUsers, userData],
   )
 
   const onChangeValue = useCallback(
     (key, value) => {
-      const tmp: UserData = userData
-      ;(tmp as any)[key] = value
+      const tmp: UserData = userData;
+      (tmp as any)[key] = value
       setUserData(tmp)
     },
-    [userData]
+    [userData],
   )
 
   const onClickConfirm = useCallback(async () => {

@@ -3,6 +3,7 @@ import { Avatar, Dropdown, Menu } from 'antd'
 import React, { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useHistory } from 'react-router'
+import { UserInfo } from '@/type'
 
 const CustomAvatar: FC = () => {
   const { t } = useTranslation()

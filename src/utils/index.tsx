@@ -6,6 +6,7 @@ import { AxiosError } from 'axios'
 import i18n from 'i18next'
 import _get from 'lodash/get'
 import React from 'react'
+import { JsonObject } from '@/type'
 
 export interface BaseJson {
   key: React.Key
@@ -22,7 +23,7 @@ export function disableOsDefault(e: React.MouseEvent<any> | KeyboardEvent) {
 
 export const isMobile = () => {
   const flag = navigator.userAgent.match(
-    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone|MiuiBrowser)/i
+    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone|MiuiBrowser)/i,
   )
   return flag
 }
@@ -52,15 +53,15 @@ export const getHrefParam = (): JsonObject => {
 
 export const goToAccountChoosePage = (): void => {
   const localInfo = JSON.parse(
-    localStorage.getItem('AD_DELIVER_PLATFORM_ACCOUNT') || ''
+    localStorage.getItem('AD_DELIVER_PLATFORM_ACCOUNT') || '',
   )
   window.location.assign(
     process.env.REACT_APP_AD_DELIVER_ACCOUNT_URL
       ? process.env.REACT_APP_AD_DELIVER_ACCOUNT_URL.replace(
-          '{GAME_CODE}',
-          localInfo?.gameCode || 'yxs'
-        )
-      : ''
+        '{GAME_CODE}',
+        localInfo?.gameCode || 'yxs',
+      )
+      : '',
   )
 }
 
@@ -88,7 +89,7 @@ export const formMoney = (
     separator: ' ',
     exportUnit: 'CN_YUAN',
     exact: 2,
-  }
+  },
 ): string => {
   const divisorMap = {
     CN_FEN: {
@@ -112,7 +113,7 @@ export const formMoney = (
   if (options.needSeparate) {
     return String(result).replace(
       /(\d)(?=(\d{3})+\b)/g,
-      `$1${options.separator}`
+      `$1${options.separator}`,
     )
   }
   return String(result)
@@ -164,7 +165,7 @@ export function ChangeMessage(props: ChangeMessageProps) {
 }
 
 export function defaultGetErrorMsg(
-  error: AxiosError
+  error: AxiosError,
 ): string | React.ReactNode {
   const err: any = error
   let detail = false
@@ -174,10 +175,9 @@ export function defaultGetErrorMsg(
   }
   let code = (_get(error, 'response.data.code') || error.code || '').toString()
   code = code.toLowerCase()
-  const backendDefinedMsg =
-    _get(error, 'response.data.msg') ||
-    _get(error, 'response.data.errorMessage', '') ||
-    _get(error, 'response.data.message', '')
+  const backendDefinedMsg = _get(error, 'response.data.msg')
+    || _get(error, 'response.data.errorMessage', '')
+    || _get(error, 'response.data.message', '')
   const msg = _get(error, 'message')
   const status = _get(error, 'response.status')
   let errMsg: string | React.ReactNode = ''
@@ -211,7 +211,7 @@ export function defaultGetErrorMsg(
 export function showError(
   s: string | React.ReactNode,
   duration = 4,
-  toBottom = 70
+  toBottom = 70,
 ) {
   message.destroy()
   message.config({
@@ -225,7 +225,7 @@ export function showError(
 export function showMessage(
   s: string | React.ReactNode,
   duration = 2,
-  toBottom = 70
+  toBottom = 70,
 ) {
   message.destroy()
   message.config({
@@ -238,7 +238,7 @@ export function showMessage(
 export function showInfo(
   s: string | React.ReactNode,
   duration = 2,
-  toBottom = 70
+  toBottom = 70,
 ) {
   message.config({
     top: window.innerHeight - toBottom,

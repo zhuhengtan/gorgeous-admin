@@ -2,7 +2,9 @@ import { AxiosRequestConfig } from 'axios'
 
 import apiList from './api'
 import axios from './axios'
-import { ParamsArray, QueryData, QueryMethod, QueryParams } from './type'
+import {
+  ParamsArray, QueryData, QueryMethod, QueryParams,
+} from './type'
 
 // 不放在type.ts中防止循环引用
 export type APIFunctionType = {
@@ -18,7 +20,7 @@ const gen = (params: string) => {
 
   const paramsArray = params.split(' ') as ParamsArray
   if (paramsArray.length === 2) {
-    ;[method, url] = paramsArray
+    [method, url] = paramsArray
   }
 
   return (data?: QueryData, options?: AxiosRequestConfig) => {
@@ -45,7 +47,7 @@ const APIFunction: APIFunctionType = {} as APIFunctionType
 
 Reflect.ownKeys(apiList).forEach((key) => {
   APIFunction[key as keyof APIFunctionType] = gen(
-    apiList[key as keyof APIFunctionType]
+    apiList[key as keyof APIFunctionType],
   )
 })
 

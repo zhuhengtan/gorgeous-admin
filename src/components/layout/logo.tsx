@@ -1,6 +1,5 @@
 import './index.less'
 
-import { Image } from 'antd'
 import React, { useCallback } from 'react'
 import { useHistory } from 'react-router'
 

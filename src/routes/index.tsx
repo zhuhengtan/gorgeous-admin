@@ -1,5 +1,5 @@
-import { SecurityScanOutlined } from '@ant-design/icons'
 import React from 'react'
+import { SecurityScanOutlined } from '@ant-design/icons'
 import { Redirect } from 'react-router'
 import { RouteConfig } from 'react-router-config'
 

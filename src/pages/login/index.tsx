@@ -1,8 +1,8 @@
 import { useRequest, useLocalStorageState } from 'ahooks'
 
 import { Form } from 'antd'
-import React, { useCallback, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import React, { useCallback } from 'react'
+import { useHistory } from 'react-router'
 
 import { getHrefParam, isMobile } from '@/utils'
 import { setCookie } from '@/utils/cookie'
@@ -11,7 +11,7 @@ import api from '@/service'
 import Mobile from './mobile'
 import PC from './pc'
 
-const { login: loginRequest, loginByLark: loginByLarkRequest } = api
+const { login: loginRequest } = api
 
 const LoginComponent = isMobile() ? Mobile : PC
 
@@ -28,14 +28,14 @@ function Login() {
     (loginRes) => {
       setCookie('token', loginRes.token)
       setToken(loginRes.token)
-      setUserInfo(loginRes.userInfo)
+      setUserInfo(loginRes.user)
       if (params.redirect) {
         history.push(params.redirect as string)
       } else {
         history.push('/')
       }
     },
-    [history, params.redirect, setToken, setUserInfo]
+    [history, params.redirect, setToken, setUserInfo],
   )
 
   const { run: login, loading: loginLoading } = useRequest(
@@ -45,17 +45,7 @@ function Login() {
       onSuccess(e) {
         loginSuccess(e)
       },
-    }
-  )
-
-  const { run: loginByLark, loading: larkLoginLoading } = useRequest(
-    (data) => loginByLarkRequest(data),
-    {
-      manual: true,
-      onSuccess(e) {
-        loginSuccess(e)
-      },
-    }
+    },
   )
 
   const keyDownHandle = useCallback(
@@ -66,51 +56,19 @@ function Login() {
         await login(data)
       }
     },
-    [form, login]
+    [form, login],
   )
   const handlelogin = useCallback(async () => {
     const data = form.getFieldsValue()
     await login(data)
   }, [form, login])
 
-  const onClickLarkLogin = useCallback(() => {
-    window.location.assign(
-      `https://open.feishu.cn/connect/qrconnect/page/sso/?redirect_uri=${encodeURIComponent(
-        window.location.origin + window.location.pathname
-      )}&app_id=${process.env.REACT_APP_FEISHU_APP_ID}`
-    )
-  }, [])
-
-  useEffect(() => {
-    if (params.from === 'feishu') {
-      if (localStorage.getItem('token')) {
-        if (isMobile()) {
-          history.push('/dashboard/mobile')
-        } else {
-          history.push('/feedbacks/dashboard')
-        }
-      } else {
-        onClickLarkLogin()
-      }
-    }
-  }, [history, onClickLarkLogin, params.from])
-
-  useEffect(() => {
-    const larkLogin = () => {
-      loginByLark({ code: String(params.code) })
-    }
-    if (params.code) {
-      larkLogin()
-    }
-  }, [loginByLark, params.code])
-
   return (
     <LoginComponent
-      loading={loginLoading || larkLoginLoading}
+      loading={loginLoading}
       form={form}
       keyDownHandle={keyDownHandle}
       handlelogin={handlelogin}
-      onClickLarkLogin={onClickLarkLogin}
     />
   )
 }

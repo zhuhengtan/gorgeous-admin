@@ -24,7 +24,7 @@ const apiList: ApiList = {
   addRole: 'POST /api/role',
   updateRole: 'PUT /api/role',
   deleteRole: 'DELETE /api/role',
-  getUserAuth: 'GET /api/user/auth',
+  getUserAuth: 'GET /api/auth/user-auth',
 }
 
 export default apiList

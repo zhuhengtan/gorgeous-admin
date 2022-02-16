@@ -9,11 +9,12 @@ interface Props {
   form: FormInstance
   keyDownHandle: (e: any) => Promise<void>
   handlelogin: () => void
-  onClickLarkLogin: () => void
 }
 
 function MobileLogin(props: Props) {
-  const { form, keyDownHandle, handlelogin, loading, onClickLarkLogin } = props
+  const {
+    form, keyDownHandle, handlelogin, loading,
+  } = props
 
   const formItemLayout = {
     labelCol: { span: 0 },
@@ -63,16 +64,6 @@ function MobileLogin(props: Props) {
               登录
             </Button>
           </Form.Item>
-          <div
-            className="lark-login"
-            onClick={onClickLarkLogin}
-            style={{ textAlign: 'center' }}
-          >
-            <img
-              src="https://techcenter-common-storage.123u.com/public/feishu.png"
-              width="40"
-            />
-          </div>
         </Form>
       </div>
     </div>

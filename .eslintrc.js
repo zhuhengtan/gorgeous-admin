@@ -3,28 +3,21 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  globals: {
-    JSX: true,
-  },
   extends: [
-    'airbnb-typescript',
-    'airbnb/hooks',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'plugin:prettier/recommended',
+    'plugin:react/recommended',
+    'airbnb',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
-      tsx: true,
-      modules: true,
     },
-    ecmaVersion: 2020,
+    ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.json',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: [
+    'react',
+  ],
   settings: {
     'import/resolver': {
       alias: {
@@ -39,21 +32,12 @@ module.exports = {
     },
   },
   rules: {
+    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
     'no-nested-ternary': [0],
     'react/jsx-filename-extension': [
       2,
       {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      },
-    ],
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      {
-        js: 'never',
-        ts: 'never',
-        jsx: 'never',
-        tsx: 'never',
       },
     ],
     'max-len': [0],
@@ -82,7 +66,8 @@ module.exports = {
     'jsx-a11y/media-has-caption': 0,
     'import/no-unresolved': [2, { ignore: ['react', 'react-dom'] }],
     semi: ['error', 'never'],
-    'prettier/prettier': ['error', { semi: false, singleQuote: true }],
-    '@typescript-eslint/no-empty-function': 'off',
+    'react/function-component-definition': [0],
+    'react/jsx-no-useless-fragment': [0],
+    'no-unused-vars': [0]
   },
 };

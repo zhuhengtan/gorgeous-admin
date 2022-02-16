@@ -2,20 +2,23 @@ import './index.less'
 
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useLocalStorageState, useRequest } from 'ahooks'
-import { Button, Col, Form, Input, message, Modal, Row, Upload } from 'antd'
+import {
+  Button, Col, Form, Input, message, Modal, Row, Upload,
+} from 'antd'
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useHistory } from 'react-router'
 
 import { getCookie } from '@/utils/cookie'
 import api from '@/service'
+import { UserInfo } from '@/type'
 
 const {
   changePassword: changePasswordRequest,
   changeAvatar: changeAvatarRequest,
 } = api
 
-const UserInfo: React.FC = () => {
+const UserInfoComponent: React.FC = () => {
   const { t } = useTranslation()
   const history = useHistory()
   const [, setToken] = useLocalStorageState<string>('TOKEN', {
@@ -26,15 +29,9 @@ const UserInfo: React.FC = () => {
       id: 0,
       name: '',
       email: '',
-      user_type: '1',
+      user_type: 1,
       avatar: '',
-      login_time: '',
       status: 0,
-      remark: '',
-      role_id: 0,
-      role_name: '',
-      setting: '',
-      projects: 0,
     },
   })
 
@@ -57,19 +54,13 @@ const UserInfo: React.FC = () => {
           id: 0,
           name: '',
           email: '',
-          user_type: '1',
+          user_type: 1,
           avatar: '',
-          login_time: '',
           status: 0,
-          remark: '',
-          role_id: 0,
-          role_name: '',
-          setting: '',
-          projects: 0,
         })
         history.push('/login')
       },
-    }
+    },
   )
 
   const { run: changeAvatar } = useRequest(
@@ -77,7 +68,7 @@ const UserInfo: React.FC = () => {
     {
       manual: true,
       onSuccess() {},
-    }
+    },
   )
 
   // 修改密码
@@ -156,7 +147,7 @@ const UserInfo: React.FC = () => {
           <Row className="item-content">{user.email}</Row>
           <Row className="item-label">{t('User type')}</Row>
           <Row className="item-content">
-            {user.user_type === '1' ? t('Inner user') : t('Outer user')}
+            {user.user_type === 1 ? t('Inner user') : t('Outer user')}
           </Row>
         </Col>
       </Row>
@@ -168,7 +159,7 @@ const UserInfo: React.FC = () => {
           <Row className="item-label">{t('Password')}</Row>
           <Row className="item-content">
             <Col>******</Col>
-            {user.user_type === '2' && (
+            {user.user_type === 2 && (
               <Col span={1} push={24}>
                 <Button
                   type="link"
@@ -243,8 +234,8 @@ const UserInfo: React.FC = () => {
                   }
                   return Promise.reject(
                     new Error(
-                      t('The two passwords that you entered do not match')
-                    )
+                      t('The two passwords that you entered do not match'),
+                    ),
                   )
                 },
               }),
@@ -261,4 +252,4 @@ const UserInfo: React.FC = () => {
   )
 }
 
-export default React.memo(UserInfo)
+export default React.memo(UserInfoComponent)

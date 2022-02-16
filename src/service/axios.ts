@@ -16,24 +16,19 @@ const axiosInstance: AxiosInstance = axios.create(CONFIG)
 axiosInstance.interceptors.request.use(
   (config) => {
     // 配置公共的请求部分逻辑
-    const token = getCookie('token')
-    let project: any = localStorage.getItem('SELECTED_PROJECT_ID')
-    if (project) {
-      project = JSON.parse(project)
-      if (project.value) {
-        config.headers.projectId = project.value
-      }
+    if (!config.headers) {
+      return config
     }
+    const token = getCookie('token')
     if (token) {
       config.headers.authorization = token
     }
     config.headers.language = localStorage.getItem('i18nextLng') || 'zh'
-
     return config
   },
   (error) => {
     throw error
-  }
+  },
 )
 
 // Add a response interceptor
@@ -61,7 +56,7 @@ axiosInstance.interceptors.response.use(
       window.location.assign('/login')
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 export default axiosInstance

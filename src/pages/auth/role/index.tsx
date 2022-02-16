@@ -1,5 +1,7 @@
 import { usePagination, useRequest } from 'ahooks'
-import { Button, Popconfirm, Space, Table, Tag } from 'antd'
+import {
+  Button, Popconfirm, Space, Table, Tag,
+} from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -25,15 +27,14 @@ const Roles: React.FC = () => {
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0)
 
   const { run: getRoles, loading: getLoading, pagination } = usePagination(
-    ({ current, pageSize }) =>
-      getRolesRequest({ current_page: current, page_size: pageSize }),
+    ({ current, pageSize }) => getRolesRequest({ current_page: current, page_size: pageSize }),
     {
       manual: true,
       throttleWait: 500,
       onSuccess(e) {
         setRoles(e.list as any)
       },
-    }
+    },
   )
 
   const { run: deleteRole } = useRequest((id) => deleteRoleRequest({ id }), {
@@ -138,17 +139,16 @@ const Roles: React.FC = () => {
         dataSource={roles.list}
         columns={columns}
         pagination={false}
-      ></Table>
+      >
+      </Table>
       <RoleDetailDrawer
         visible={drawerVisible}
         id={selectedRoleId}
         setVisible={setDrawerVisible}
-        onSuccess={() =>
-          getRoles({
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-          })
-        }
+        onSuccess={() => getRoles({
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+        })}
       />
     </div>
   )

@@ -5,12 +5,16 @@ import 'antd/es/layout/style'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { useLocalStorageState, useRequest } from 'ahooks'
 
-import { Breadcrumb, Layout, Menu, Space } from 'antd'
+import {
+  Breadcrumb,
+  Layout, Menu,
+  Space,
+} from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { matchPath } from 'react-router'
+import { matchPath, useHistory } from 'react-router'
 import { renderRoutes, RouteConfig } from 'react-router-config'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { UserAuthContext } from '@/context/UserAuthContext'
 import api from '@/service'
@@ -40,7 +44,7 @@ const CustomLayout = (props: RouteConfig) => {
 
   // 如果没有登录，跳转登录页
   const [token] = useLocalStorageState('TOKEN', {
-    defaultValue: ''
+    defaultValue: '',
   })
   useEffect(() => {
     if (!token && window.location.href.indexOf('login') < 0) {
@@ -57,11 +61,7 @@ const CustomLayout = (props: RouteConfig) => {
   route.routes.forEach((firstGrade: RouteConfig) => {
     if (firstGrade.routes && firstGrade.routes.length) {
       firstGrade.routes.forEach((secondGrade: RouteConfig) => {
-        const match = matchPath(locationStr, {
-          path: secondGrade.path,
-          exact: true,
-          strict: false,
-        })
+        const match = matchPath(locationStr, secondGrade.path as string)
         if (match) {
           const currentFirstPath = firstGrade.path
             ? firstGrade.path.toLocaleString()
@@ -88,11 +88,7 @@ const CustomLayout = (props: RouteConfig) => {
         }
       })
     } else {
-      const match = matchPath(locationStr, {
-        path: firstGrade.path,
-        exact: true,
-        strict: false,
-      })
+      const match = matchPath(locationStr, firstGrade.path as string)
       if (match) {
         const currentFirstPath = firstGrade.path
           ? firstGrade.path.toLocaleString()
@@ -118,7 +114,7 @@ const CustomLayout = (props: RouteConfig) => {
       // const path = menu.path.toLocaleString();
       history.push(menu.path)
     },
-    [history]
+    [history],
   )
 
   function renderMenuItem(originRoutes: RouteConfig[]) {
@@ -151,33 +147,17 @@ const CustomLayout = (props: RouteConfig) => {
 
   const { run: getUserAuth } = useRequest(() => getUserAuthRequest(), {
     manual: true,
-    formatResult(e) {
-      const obj = {}
-      e.auth.forEach((auth: any) => {
-        if (auth.checked) {
-          if (!Object.prototype.hasOwnProperty.call(obj, auth.page_path)) {
-            ;(obj as JsonObject)[auth.page_path] = []
-          }
-          if (auth.element_key) {
-            ;((obj as JsonObject)[auth.page_path] as JsonObject[]).push(
-              auth.element_key
-            )
-          }
-        }
-      })
-      return obj
-    },
-    onSuccess(e) {
-      setUserAuth(e)
-      setAuth(e)
+    onSuccess(e: any) {
+      setUserAuth(e.auth)
+      setAuth(e.auth)
     },
   })
 
-  // useEffect(() => {
-  //   if (token) {
-  //     getUserAuth()
-  //   }
-  // }, [getUserAuth, token])
+  useEffect(() => {
+    if (token) {
+      getUserAuth()
+    }
+  }, [getUserAuth, token])
 
   const filterRoutersByPermission = useCallback(
     (routers: RouteConfig[]) => {
@@ -185,11 +165,12 @@ const CustomLayout = (props: RouteConfig) => {
       for (let i = 0; i < routers.length; i++) {
         const obj = { ...routers[i] }
         if (
-          obj.checkAuth &&
-          Object.prototype.hasOwnProperty.call(userAuth, obj.path as string)
+          obj.checkAuth
+          && Object.prototype.hasOwnProperty.call(userAuth, obj.path as string)
         ) {
           arr.push(obj)
         }
+        console.log(arr)
         if (obj.routes && obj.routes.length) {
           const newRouters = filterRoutersByPermission(obj.routes)
           if (newRouters.length) {
@@ -203,7 +184,7 @@ const CustomLayout = (props: RouteConfig) => {
       }
       return arr
     },
-    [userAuth]
+    [userAuth],
   )
 
   return (
@@ -233,7 +214,7 @@ const CustomLayout = (props: RouteConfig) => {
                 collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
                 {
                   onClick: toggleCollapse,
-                }
+                },
               )}
               <Breadcrumb className="breadcrumb">
                 {breadcrumbList.map((item: BreadcrumbItem) => {

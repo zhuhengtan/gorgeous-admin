@@ -1,6 +1,6 @@
 import { GlobalOutlined } from '@ant-design/icons'
 import { useLocalStorageState } from 'ahooks'
-import { Dropdown, Menu, Space } from 'antd'
+import { Dropdown, Menu } from 'antd'
 import React, { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -16,7 +16,7 @@ const GlobalLan: FC = () => {
       i18n.changeLanguage(lan)
       setLanguage(lan)
     },
-    [i18n, setLanguage]
+    [i18n, setLanguage],
   )
 
   const menu = (
