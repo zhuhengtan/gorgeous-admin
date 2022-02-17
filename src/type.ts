@@ -10,7 +10,7 @@ export interface UserInfo {
   id: number
   name: string
   email: string
-  user_type: number
+  userType: number
   avatar: string
   status: number
 }

@@ -8,6 +8,7 @@ import SecondLayout from '@/components/layout/second-layout'
 import AccessDeny from '@/pages/access-deny'
 import Roles from '@/pages/auth/role'
 import Users from '@/pages/auth/user'
+import Pages from '@/pages/auth/page'
 import Login from '@/pages/login'
 import NotFound from '@/pages/not-found'
 import UserInfo from '@/pages/user-info'
@@ -40,16 +41,22 @@ const routes: RouteConfig[] = [
         component: SecondLayout,
         routes: [
           {
-            path: '/auth/user-list',
-            name: 'User list',
+            path: '/auth/page',
+            name: 'Page list',
             checkAuth: true,
-            component: Users,
+            component: Pages,
           },
           {
-            path: '/auth/role-list',
+            path: '/auth/role',
             name: 'Role list',
             checkAuth: true,
             component: Roles,
+          },
+          {
+            path: '/auth/user',
+            name: 'User list',
+            checkAuth: true,
+            component: Users,
           },
         ],
       },

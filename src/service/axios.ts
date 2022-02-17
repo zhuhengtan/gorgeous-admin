@@ -19,11 +19,15 @@ axiosInstance.interceptors.request.use(
     if (!config.headers) {
       return config
     }
-    const token = getCookie('token')
+    let token = getCookie('token')
+    if (!token) {
+      token = localStorage.getItem('token') || ''
+    }
     if (token) {
-      config.headers.authorization = token
+      config.headers.Authorization = `Bearer ${token}`
     }
     config.headers.language = localStorage.getItem('i18nextLng') || 'zh'
+    config.headers['content-type'] = 'application/json'
     return config
   },
   (error) => {

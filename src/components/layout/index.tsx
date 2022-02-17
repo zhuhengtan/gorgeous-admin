@@ -41,6 +41,7 @@ const CustomLayout = (props: RouteConfig) => {
   const { t } = useTranslation()
   const [userAuth, setUserAuth] = useState([])
   const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
+  const [user] = useLocalStorageState('USER_INFO')
 
   // 如果没有登录，跳转登录页
   const [token] = useLocalStorageState('TOKEN', {
@@ -134,7 +135,7 @@ const CustomLayout = (props: RouteConfig) => {
           <Menu.Item
             key={path?.toLocaleString()}
             onClick={() => {
-              goToPage(route)
+              goToPage(item)
             }}
             title={t(name)}
             icon={icon}
@@ -145,7 +146,7 @@ const CustomLayout = (props: RouteConfig) => {
       })
   }
 
-  const { run: getUserAuth } = useRequest(() => getUserAuthRequest(), {
+  const { run: getUserAuth } = useRequest(() => getUserAuthRequest({ id: user.id }), {
     manual: true,
     onSuccess(e: any) {
       setUserAuth(e.auth)
@@ -161,27 +162,29 @@ const CustomLayout = (props: RouteConfig) => {
 
   const filterRoutersByPermission = useCallback(
     (routers: RouteConfig[]) => {
-      const arr = []
-      for (let i = 0; i < routers.length; i++) {
-        const obj = { ...routers[i] }
+      const arr: RouteConfig[] = []
+      routers.some((router) => {
+        const obj = { ...router }
         if (
           obj.checkAuth
           && Object.prototype.hasOwnProperty.call(userAuth, obj.path as string)
         ) {
           arr.push(obj)
         }
-        console.log(arr)
         if (obj.routes && obj.routes.length) {
           const newRouters = filterRoutersByPermission(obj.routes)
           if (newRouters.length) {
             obj.routes = newRouters
             arr.push(obj)
-            continue
+            return true
           }
-          continue
+          return true
         }
-        arr.push(obj)
-      }
+        if (!obj.checkAuth) {
+          arr.push(obj)
+        }
+        return false
+      })
       return arr
     },
     [userAuth],

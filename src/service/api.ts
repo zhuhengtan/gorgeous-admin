@@ -25,6 +25,13 @@ const apiList: ApiList = {
   updateRole: 'PUT /api/role',
   deleteRole: 'DELETE /api/role',
   getUserAuth: 'GET /api/auth/user-auth',
+
+  // 前端页面管理
+  getPageList: 'GET /api/auth/pages',
+  createPage: 'POST /api/auth/page',
+  updatePage: 'PUT /api/auth/page',
+  deletePage: 'DELETE /api/auth/page',
+  getAllApis: 'GET /api/auth/all-apis',
 }
 
 export default apiList

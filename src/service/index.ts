@@ -1,5 +1,6 @@
 import { AxiosRequestConfig } from 'axios'
 
+import md5 from 'md5'
 import apiList from './api'
 import axios from './axios'
 import {
@@ -22,8 +23,14 @@ const gen = (params: string) => {
   if (paramsArray.length === 2) {
     [method, url] = paramsArray
   }
-
   return (data?: QueryData, options?: AxiosRequestConfig) => {
+    if (!data) {
+      data = {}
+    }
+    const timestamp = (new Date()).getTime()
+    data.timestamp = timestamp
+    data.sign = md5(`${Object.keys(data).filter((key) => (key !== 'timestamp' && key !== 'sign')).map((key) => JSON.stringify((data as QueryData)[key])).join('')}${timestamp}${process.env.REACT_APP_SIGN_KEY}`).toUpperCase()
+
     const queryParams: QueryParams = {
       url,
       method,

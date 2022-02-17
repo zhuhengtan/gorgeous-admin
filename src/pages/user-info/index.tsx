@@ -29,7 +29,7 @@ const UserInfoComponent: React.FC = () => {
       id: 0,
       name: '',
       email: '',
-      user_type: 1,
+      userType: 1,
       avatar: '',
       status: 0,
     },
@@ -54,7 +54,7 @@ const UserInfoComponent: React.FC = () => {
           id: 0,
           name: '',
           email: '',
-          user_type: 1,
+          userType: 1,
           avatar: '',
           status: 0,
         })
@@ -147,7 +147,7 @@ const UserInfoComponent: React.FC = () => {
           <Row className="item-content">{user.email}</Row>
           <Row className="item-label">{t('User type')}</Row>
           <Row className="item-content">
-            {user.user_type === 1 ? t('Inner user') : t('Outer user')}
+            {user.userType === 1 ? t('Inner user') : t('Outer user')}
           </Row>
         </Col>
       </Row>
@@ -159,7 +159,7 @@ const UserInfoComponent: React.FC = () => {
           <Row className="item-label">{t('Password')}</Row>
           <Row className="item-content">
             <Col>******</Col>
-            {user.user_type === 2 && (
+            {user.userType === 2 && (
               <Col span={1} push={24}>
                 <Button
                   type="link"

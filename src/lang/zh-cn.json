@@ -14,10 +14,14 @@
   "Confirm": "确认",
   "Cancel": "取消",
   "Description": "描述",
+  "Create": "新建",
   "Delete": "删除",
   "Are you sure to delete": "您确定要删除吗？",
   "Edit": "编辑",
   "Submit": "提交",
+  "Update success": "更新成功！",
+  "Create success": "创建成功！",
+  "Delete success": "删除成功！",
 
   "Please input account": "请输入账号",
   "Please input pwd": "请输入密码",
@@ -33,7 +37,7 @@
   
   "Auth management": "权限管理",
   "User management": "用户管理",
-  "User list": "用户列表",
+  "User list": "用户管理",
   "Filter with username or email": "筛选用户名或邮箱",
   "Add user": "添加用户",
   "Id": "ID",
@@ -59,7 +63,7 @@
   "Please input username": "请输入用户名",
   "Please input email": "请输入邮箱",
 
-  "Role list":"角色列表",
+  "Role list":"角色管理",
   "Role type": "角色类型",
   "System role": "系统角色",
   "Custom role": "自定义角色",
@@ -74,5 +78,18 @@
   "Please input new password": "请输入新密码",
   "Please enter the password again": "请再次确认密码",
   "The two passwords that you entered do not match": "两次密码输入不一致",
-  "Edit password": "修改密码"
+  "Edit password": "修改密码",
+
+  "Page list": "页面管理",
+  "Page name": "页面名称",
+  "Page path": "页面路径",
+  "Page operations": "页面权限",
+  "Edit page": "编辑页面",
+  "Create page": "新建页面",
+  "Please input page name": "请输入页面标题",
+  "Please input page path": "请输入页面路径",
+  "Operation name": "权限名",
+  "Operation key": "权限key", 
+  "Operation api": "调用接口",
+  "Add operation": "添加操作"
 }
