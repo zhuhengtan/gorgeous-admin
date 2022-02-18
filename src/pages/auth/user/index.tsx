@@ -11,25 +11,13 @@ import api from '@/service'
 
 import AddUserForm from './add-user-form'
 
-interface User {
-  id: number
-  name: string
-  user_type: string
-  status: string
-}
-
-interface Role {
-  id: number
-  name: string
-}
+import { User, Role } from '../types'
 
 const {
   getUsers: getUsersRequest,
   changeUserStatus: changeUserStatusRequest,
   resetPassword: resetPasswordRequest,
-  removeUser: removeUserRequest,
-  getRoles: getRoleListRequest,
-  updateUserRole: updateUserRoleRequest,
+  deleteUser: deleteUserRequest,
 } = api
 
 const Users: React.FC = () => {
@@ -37,12 +25,9 @@ const Users: React.FC = () => {
   const [filter, setFilter] = useState({
     name: '',
   })
-  const [users, setUsers] = useState({
-    list: [],
-    total: 0,
-  })
+  const [users, setUsers] = useState<User[]>([])
   const [addPanelVisible, setAddPanelVisible] = useState<boolean>(false)
-  const [roleList, setRoleList] = useState([])
+  const [selectedUserId, setSelectedUserId] = useState<number>(0)
 
   const { run: getUsers, loading: getLoading, pagination } = usePagination(
     ({ current, pageSize }, filters) => getUsersRequest({
@@ -53,8 +38,8 @@ const Users: React.FC = () => {
     {
       manual: true,
       throttleWait: 500,
-      onSuccess(e) {
-        setUsers(e.list as any)
+      onSuccess(e: any) {
+        setUsers(e.list)
       },
     },
   )
@@ -69,39 +54,19 @@ const Users: React.FC = () => {
     },
   )
 
-  const { run: resetPassword } = useRequest(
+  const { run: resetPassword, loading: resetLoading } = useRequest(
     (id) => resetPasswordRequest({ id }),
     {
       manual: true,
     },
   )
 
-  const { run: removeUser } = useRequest((id) => removeUserRequest({ id }), {
+  const { run: removeUser } = useRequest((id) => deleteUserRequest({ id }), {
     manual: true,
     onSuccess() {
-      getUsers({ current: 1, pageSize: pagination.pageSize }, filter)
+      getUsers({ current: pagination.current, pageSize: pagination.pageSize }, filter)
     },
   })
-
-  const { run: getRoleList, loading: getRoleLoading } = useRequest(
-    () => getRoleListRequest(),
-    {
-      manual: true,
-      onSuccess(e: any) {
-        setRoleList(e.list)
-      },
-    },
-  )
-
-  const { run: changeUserRole } = useRequest(
-    (uid, roleId) => updateUserRoleRequest({ id: uid, role_id: roleId }),
-    {
-      manual: true,
-      onSuccess() {
-        getUsers({ current: pagination.current, pageSize: pagination.pageSize }, {})
-      },
-    },
-  )
 
   const columns = [
     {
@@ -121,11 +86,11 @@ const Users: React.FC = () => {
       dataIndex: 'user_type',
       render: (text: string, record: User) => (
         <Space size="middle">
-          {record.user_type === '2' && (
-            <Tag color="blue">{t('Outer user')}</Tag>
+          {record.userType === 0 && (
+            <Tag color="blue">{t('System user')}</Tag>
           )}
-          {record.user_type === '1' && (
-            <Tag color="orange">{t('Inner user')}</Tag>
+          {record.userType === 1 && (
+            <Tag color="orange">{t('Created user')}</Tag>
           )}
         </Space>
       ),
@@ -134,20 +99,11 @@ const Users: React.FC = () => {
       title: t('Role name'),
       dataIndex: 'role_name',
       render: (text: string, record: User) => (
-        <Select
-          style={{ width: 140 }}
-          bordered={false}
-          loading={getRoleLoading}
-          placeholder={text}
-          onFocus={() => getRoleList()}
-          onChange={(id) => changeUserRole(record.id, id)}
-        >
-          {roleList.map((role: Role) => (
-            <Select.Option key={role.id} value={role.id}>
-              {role.name}
-            </Select.Option>
+        <Space size="middle">
+          {record.roles.map((role: Role) => (
+            <Tag key={role.id} color="success">{role.name}</Tag>
           ))}
-        </Select>
+        </Space>
       ),
     },
     {
@@ -155,8 +111,8 @@ const Users: React.FC = () => {
       dataIndex: 'status',
       render: (text: string, record: User) => (
         <Space size="middle">
-          {record.status === '2' && <Tag color="red">{t('Disable')}</Tag>}
-          {record.status === '1' && <Tag color="success">{t('Enable')}</Tag>}
+          {record.status === 0 && <Tag color="red">{t('Disable')}</Tag>}
+          {record.status === 1 && <Tag color="success">{t('Enable')}</Tag>}
         </Space>
       ),
     },
@@ -169,34 +125,15 @@ const Users: React.FC = () => {
       dataIndex: 'operation',
       render: (text: string, record: User) => (
         <Space size="middle">
-          {record.status === '1' && (
-            <Popconfirm
-              title={t('Are you sure to disable this user')}
-              onConfirm={() => {
-                changeUserStatus({ id: record.id, status: '2' })
-              }}
-              okText={t('Confirm')}
-              cancelText={t('Cancel')}
-            >
-              <Button type="primary" danger size="small">
-                {t('Disable')}
-              </Button>
-            </Popconfirm>
-          )}
-          {record.status === '2' && (
-            <Popconfirm
-              title={t('Are you sure to enable this user')}
-              onConfirm={() => {
-                changeUserStatus({ id: record.id, status: '1' })
-              }}
-              okText={t('Confirm')}
-              cancelText={t('Cancel')}
-            >
-              <Button type="primary" className="enable-btn" size="small">
-                {t('Enable')}
-              </Button>
-            </Popconfirm>
-          )}
+          <Button
+            size="small"
+            type="primary"
+            onClick={() => {
+              setSelectedUserId(record.id)
+              setAddPanelVisible(true)
+            }}
+          >{t('Edit')}
+          </Button>
           <Popconfirm
             title={t('Are you sure to remove this user')}
             onConfirm={() => {
@@ -209,7 +146,7 @@ const Users: React.FC = () => {
               {t('Remove')}
             </Button>
           </Popconfirm>
-          {record.user_type === '2' && (
+          {record.userType === 1 && (
             <Popconfirm
               title={t('Are you sure to reset password')}
               onConfirm={() => {
@@ -218,7 +155,7 @@ const Users: React.FC = () => {
               okText={t('Confirm')}
               cancelText={t('Cancel')}
             >
-              <Button type="primary" size="small">
+              <Button loading={resetLoading} type="primary" size="small">
                 {t('Reset password')}
               </Button>
             </Popconfirm>
@@ -264,27 +201,19 @@ const Users: React.FC = () => {
       <Table
         loading={getLoading}
         rowKey="id"
-        dataSource={users.list}
+        dataSource={users}
         columns={columns}
-        pagination={{
-          ...pagination,
-          onChange: (page, pageSize) => {
-            getUsers({ current: page, pageSize: pageSize || 10 }, filter)
-          },
-        }}
+        pagination={pagination}
       />
       <AddUserForm
+        id={selectedUserId}
         visible={addPanelVisible}
         setVisible={setAddPanelVisible}
-        onSuccess={() => getUsers({ ...pagination }, filter)}
+        onSuccess={() => {
+          setSelectedUserId(0)
+          getUsers({ ...pagination }, filter)
+        }}
       />
-      {/* <EditForm
-        id={id}
-        roleId={roleId}
-        bindRole={bindRole}
-        editFormVisible={editFormVisible}
-        setEditFormVisible={setEditFormVisible}
-      ></EditForm> */}
     </div>
   )
 }

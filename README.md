@@ -30,6 +30,6 @@ npm start
 
 ✅ 用户管理
 
-👨🏻‍💻 [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server)接口对接
+✅ [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server)接口对接
 
 👨🏻‍💻 [gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)

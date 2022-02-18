@@ -1,93 +1,45 @@
 import { useRequest } from 'ahooks'
 import {
-  Form, Input, Modal, Select, Tabs, TreeSelect,
+  Checkbox,
+  Form, Input, Modal, Radio, Select, Switch, Tabs, TreeSelect,
 } from 'antd'
 import React, {
   Dispatch,
   SetStateAction,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import api from '@/service'
-
-const { TabPane } = Tabs
+import { cloneDeep } from 'lodash'
+import { Role } from '../types'
 
 const {
-  getHuanleUsers: getHuanleUsersRequest,
+  getUserDetail: getUserDetailRequest,
   addUser: addUserRequest,
-  getRoles: getRoleListRequest,
+  updateUser: updateUserRequest,
+  getAllRoles: getAllRolesRequest,
 } = api
 
-interface AddUserParams {
-  name: string
-  email: string
-  user_type: string
-  avatar?: string
-  role_id: number
-}
-
 interface Props {
+  id: number
   visible: boolean
   setVisible: Dispatch<SetStateAction<boolean>>
   onSuccess?: () => void
 }
 
-interface UserData {
-  name: string
-  email: string
-  user_type: string
-  avatar: string
-  role_id: number
-}
-
-interface Role {
-  id: number
-  name: string
-}
-
 const AddUserForm: React.FC<Props> = (props: Props) => {
-  const { visible, setVisible, onSuccess } = props
+  const {
+    id, visible, setVisible, onSuccess,
+  } = props
   const { t } = useTranslation()
 
   const [form] = Form.useForm()
-  const [huanleUsers, setHuanleUsers] = useState()
-  const [roleList, setRoleList] = useState([])
-  const [userData, setUserData] = useState<UserData>({
-    name: '',
-    email: '',
-    user_type: '1',
-    avatar: '',
-    role_id: 0,
-  })
+  const [roleList, setRoleList] = useState<Role[]>([])
 
-  const transformTreeData = useCallback((oldTree: any) => {
-    const newTree: any = []
-    oldTree.map((item: any) => newTree.push({
-      title: item.name,
-      value: item.uid ? item.department_id + item.uid : item.org_id,
-      children:
-          item.child_dept || item.dept_users_info
-            ? transformTreeData([...item.child_dept, ...item.dept_users_info])
-            : [],
-      selectable: !item.org_id,
-      data: item,
-    }))
-    return newTree
-  }, [])
-
-  const { run: getHuanleUsers, loading: getHuanleUsersLoading } = useRequest(
-    () => getHuanleUsersRequest(),
-    {
-      manual: true,
-      refreshOnWindowFocus: false,
-      onSuccess(e: any) {
-        setHuanleUsers(transformTreeData(e.data))
-      },
-    },
-  )
   const { run: addUser, loading: addLoading } = useRequest(
     (data) => addUserRequest(data),
     {
@@ -102,12 +54,35 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     },
   )
 
-  const { run: getRoleList, loading: getRoleLoading } = useRequest(
-    () => getRoleListRequest(),
+  const { run: updateUser, loading: updateLoading } = useRequest(
+    (data) => updateUserRequest(data),
     {
       manual: true,
-      onSuccess(e: any) {
-        setRoleList(e.list)
+      onSuccess() {
+        form.resetFields()
+        if (onSuccess) {
+          onSuccess()
+        }
+        setVisible(false)
+      },
+    },
+  )
+
+  const { run: getUserDetail, loading: getLoading } = useRequest((id) => getUserDetailRequest({ id }), {
+    manual: true,
+    onSuccess(res) {
+      const formData: any = cloneDeep(res)
+      formData.roleIds = formData.roles.map((role: Role) => (role.id))
+      form.setFieldsValue(formData)
+    },
+  })
+
+  const { run: getAllRoles, loading: getRoleLoading } = useRequest(
+    () => getAllRolesRequest(),
+    {
+      manual: true,
+      onSuccess(e: Role[]) {
+        setRoleList(e)
       },
     },
   )
@@ -116,41 +91,22 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     setVisible(false)
   }, [setVisible])
 
-  const handleTreeSelect = useCallback(
-    (v) => {
-      const getUserInfo = (departs: any) => {
-        departs.forEach((item: any) => {
-          if (Array.isArray(item.children) && item.children.length > 0) {
-            getUserInfo(item.children)
-          }
-          if (item.value === v) {
-            const tmp = userData
-            tmp.name = item.data.name
-            tmp.email = item.data.email
-            tmp.avatar = item.data.avatar
-            tmp.user_type = '1'
-            setUserData(tmp)
-          }
-        })
-      }
-      getUserInfo(huanleUsers)
-    },
-    [huanleUsers, userData],
-  )
-
-  const onChangeValue = useCallback(
-    (key, value) => {
-      const tmp: UserData = userData;
-      (tmp as any)[key] = value
-      setUserData(tmp)
-    },
-    [userData],
-  )
-
   const onClickConfirm = useCallback(async () => {
     await form.validateFields()
-    addUser(userData)
-  }, [addUser, form, userData])
+    const data = form.getFieldsValue()
+    if (id) {
+      updateUser(data)
+    } else {
+      addUser(data)
+    }
+  }, [addUser, form, id, updateUser])
+
+  useEffect(() => {
+    if (id) {
+      getUserDetail(id)
+      getAllRoles()
+    }
+  }, [getAllRoles, getUserDetail, id])
 
   return (
     <Modal
@@ -158,7 +114,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
       visible={visible}
       onCancel={handleCancel}
       onOk={onClickConfirm}
-      confirmLoading={addLoading}
+      confirmLoading={addLoading || updateLoading}
     >
       <Form
         form={form}
@@ -166,67 +122,52 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 18 }}
       >
-        <Tabs
-          defaultActiveKey="1"
-          onChange={(v) => onChangeValue('user_type', v)}
+        <Form.Item hidden name="id">
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="name"
+          label={t('Username')}
+          rules={[{ required: true, message: t('Please input username') }]}
         >
-          <TabPane tab={t('Inner user')} key="1">
-            <Form.Item
-              name="innerUser"
-              label={t('User')}
-              rules={[{ required: true, message: t('Please select user') }]}
-            >
-              <TreeSelect
-                onFocus={() => getHuanleUsers()}
-                loading={getHuanleUsersLoading}
-                fieldNames={{
-                  label: 'title',
-                  value: 'value',
-                }}
-                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                treeData={huanleUsers}
-                placeholder={t('Please select user')}
-                showSearch
-                treeNodeFilterProp="title"
-                onChange={handleTreeSelect}
-              />
-            </Form.Item>
-          </TabPane>
-          <TabPane tab={t('Outer user')} key="2">
-            <Form.Item
-              name="name"
-              label={t('Username')}
-              rules={[{ required: true, message: t('Please input username') }]}
-            >
-              <Input
-                placeholder={t('Please input username')}
-                onChange={(e) => onChangeValue('name', e.currentTarget.value)}
-              />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              label={t('Email')}
-              rules={[
-                {
-                  required: true,
-                  type: 'email',
-                  message: t('Please input email'),
-                },
-              ]}
-            >
-              <Input
-                placeholder={t('Please input email')}
-                onChange={(e) => onChangeValue('email', e.currentTarget.value)}
-              />
-            </Form.Item>
-          </TabPane>
-        </Tabs>
-        <Form.Item name="role_id" label={t('Role')}>
+          <Input
+            placeholder={t('Please input username')}
+          />
+        </Form.Item>
+        <Form.Item
+          name="status"
+          label={t('Status')}
+        >
+          <Radio.Group>
+            <Radio value={1}>{t('Enable')}</Radio>
+            <Radio value={0}>{t('Disable')}</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          name="email"
+          label={t('Email')}
+          rules={[
+            {
+              required: true,
+              type: 'email',
+              message: t('Please input email'),
+            },
+          ]}
+        >
+          <Input
+            placeholder={t('Please input email')}
+          />
+        </Form.Item>
+        <Form.Item name="roleIds" label={t('Role')}>
           <Select
             placeholder={t('Role')}
+            mode="multiple"
             loading={getRoleLoading}
-            onFocus={() => getRoleList()}
-            onChange={(e) => onChangeValue('role_id', e)}
+            onFocus={() => {
+              if (!id) {
+                getAllRoles()
+              }
+            }}
           >
             {roleList.map((role: Role) => (
               <Select.Option key={role.id} value={role.id}>

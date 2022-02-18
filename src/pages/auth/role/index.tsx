@@ -14,20 +14,19 @@ const { getRoles: getRolesRequest, deleteRole: deleteRoleRequest } = api
 
 interface Role {
   id: number
-  role_type: number
+  name: string
+  roleType: number
+  description: string
 }
 
 const Roles: React.FC = () => {
   const { t } = useTranslation()
-  const [roles, setRoles] = useState({
-    list: [],
-    total: 0,
-  })
+  const [roles, setRoles] = useState([])
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false)
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0)
 
   const { run: getRoles, loading: getLoading, pagination } = usePagination(
-    ({ current, pageSize }) => getRolesRequest({ current_page: current, page_size: pageSize }),
+    ({ current, pageSize }) => getRolesRequest({ page: current, pageSize }),
     {
       manual: true,
       throttleWait: 500,
@@ -65,11 +64,11 @@ const Roles: React.FC = () => {
     },
     {
       title: t('Role type'),
-      dataIndex: 'role_type',
+      dataIndex: 'roleType',
       render: (text: string, record: Role) => (
         <Space size="middle">
-          {record.role_type === 2 && <Tag color="blue">{t('Custom role')}</Tag>}
-          {record.role_type === 1 && (
+          {record.roleType === 2 && <Tag color="blue">{t('Custom role')}</Tag>}
+          {record.roleType === 1 && (
             <Tag color="success">{t('System role')}</Tag>
           )}
         </Space>
@@ -80,7 +79,7 @@ const Roles: React.FC = () => {
       dataIndex: 'operation',
       render: (text: string, record: Role) => (
         <Space size="middle">
-          {record.role_type !== 1 && (
+          {record.roleType !== 1 && (
             <Popconfirm
               title={t('Are you sure to delete')}
               onConfirm={() => {
@@ -89,23 +88,24 @@ const Roles: React.FC = () => {
               okText={t('Confirm')}
               cancelText={t('Cancel')}
             >
-              <Button type="primary" size="small">
+              <Button type="primary" danger size="small">
                 {t('Delete')}
               </Button>
             </Popconfirm>
           )}
 
-          {record.role_type !== 1 && (
-            <Button
-              type="dashed"
-              size="small"
-              onClick={() => {
-                onClickEdit(record.id)
-              }}
-            >
-              {t('Edit')}
-            </Button>
-          )}
+          {/* {record.roleType !== 1 && (
+
+          )} */}
+          <Button
+            type="dashed"
+            size="small"
+            onClick={() => {
+              onClickEdit(record.id)
+            }}
+          >
+            {t('Edit')}
+          </Button>
         </Space>
       ),
     },
@@ -117,9 +117,6 @@ const Roles: React.FC = () => {
 
   return (
     <div>
-      <AuthFragment authKey="test">
-        <div>test</div>
-      </AuthFragment>
       <div className="filter-container">
         <Button
           type="primary"
@@ -136,7 +133,7 @@ const Roles: React.FC = () => {
       <Table
         loading={getLoading}
         rowKey="id"
-        dataSource={roles.list}
+        dataSource={roles}
         columns={columns}
         pagination={false}
       >

@@ -8,28 +8,22 @@ import api from '@/service'
 import { usePagination, useRequest } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import { showMessage } from '@/utils'
-import OperationEdit, { Operation } from './operation'
+import OperationEdit from './operation'
+import { Operation, Page } from '../types'
 
 const {
   getPageList: getPageListRequest,
   createPage: createPageRequest,
   updatePage: updatePageRequest,
   deletePage: deletePageRequest,
+  getPageDetail: getPageDetailRequest,
 } = api
-
-interface Page {
-  id: number
-  name: string
-  path: string
-  createdAt: string
-  operations: Operation[]
-}
 
 const Pages: React.FC = () => {
   const { t } = useTranslation()
   const [pageList, setPageList] = useState<Page[]>([])
   const [visible, setVisible] = useState<boolean>(false)
-  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [editingId, setEditingId] = useState<number>(0)
   const [form] = Form.useForm()
 
   const {
@@ -40,6 +34,16 @@ const Pages: React.FC = () => {
     manual: true,
     onSuccess(e) {
       setPageList(e.list)
+    },
+  })
+
+  const {
+    run: getPageDetail,
+  } = useRequest((id) => getPageDetailRequest({ id }), {
+    manual: true,
+    onSuccess(res: Page) {
+      form.setFieldsValue(res)
+      setVisible(true)
     },
   })
 
@@ -83,7 +87,7 @@ const Pages: React.FC = () => {
   }, [])
 
   const columns = useMemo(() => [
-    { dataIndex: 'name', title: t('Page name'), width: 100 },
+    { dataIndex: 'name', title: t('Page name'), width: 200 },
     { dataIndex: 'path', title: t('Page path'), width: 200 },
     {
       dataIndex: 'operations',
@@ -108,9 +112,8 @@ const Pages: React.FC = () => {
             size="small"
             type="primary"
             onClick={() => {
-              setIsEditing(true)
-              form.setFieldsValue(row)
-              setVisible(true)
+              setEditingId(row.id)
+              getPageDetail(row.id)
             }}
           >{t('Edit')}
           </Button>
@@ -127,21 +130,21 @@ const Pages: React.FC = () => {
         </Space>
       ),
     },
-  ], [])
+  ], [deletePage, getPageDetail, t])
 
   const onClickOk = useCallback(() => {
     const data = form.getFieldsValue()
-    data.operations.forEach((operation: Operation) => {
-      if (operation.id?.toString().indexOf('tmp') !== undefined && operation.id?.toString().indexOf('tmp') >= 0) {
-        delete operation.id
-      }
-    })
-    if (isEditing) {
+    if (editingId) {
       updatePage(data)
     } else {
       createPage(data)
     }
-  }, [isEditing])
+  }, [createPage, form, editingId, updatePage])
+
+  const onDeleteOperation = useCallback(() => {
+    getPageList({ current: pagination.current, pageSize: pagination.pageSize })
+    getPageDetail(editingId)
+  }, [editingId, getPageDetail, getPageList, pagination])
 
   return (
     <>
@@ -149,7 +152,7 @@ const Pages: React.FC = () => {
         type="primary"
         size="small"
         onClick={() => {
-          setIsEditing(false)
+          setEditingId(0)
           form.resetFields()
           setVisible(true)
         }}
@@ -166,7 +169,7 @@ const Pages: React.FC = () => {
         pagination={pagination}
       />
       <Modal
-        title={isEditing ? t('Edit page') : t('Create page')}
+        title={editingId ? t('Edit page') : t('Create page')}
         visible={visible}
         width={800}
         onCancel={() => setVisible(false)}
@@ -184,7 +187,7 @@ const Pages: React.FC = () => {
             <Input placeholder={t('Please input page path')} />
           </Form.Item>
           <Form.Item label={t('Page operations')} name="operations">
-            <OperationEdit />
+            <OperationEdit onDeleteOperation={onDeleteOperation} />
           </Form.Item>
         </Form>
       </Modal>

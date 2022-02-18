@@ -17,6 +17,7 @@ module.exports = {
   },
   plugins: [
     'react',
+    'react-hooks',
   ],
   settings: {
     'import/resolver': {
@@ -68,6 +69,8 @@ module.exports = {
     semi: ['error', 'never'],
     'react/function-component-definition': [0],
     'react/jsx-no-useless-fragment': [0],
-    'no-unused-vars': [0]
+    'no-unused-vars': [0],
+    "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
+    "react-hooks/exhaustive-deps": "warn" // 检查 effect 的依赖
   },
 };

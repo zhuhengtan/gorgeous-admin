@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
-import { CloseOutlined } from '@ant-design/icons'
+import { CloseOutlined, DeleteOutlined } from '@ant-design/icons'
 import {
   Table, Input, Select, Button, Space, Row,
 } from 'antd'
@@ -8,26 +8,21 @@ import { useRequest } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import { cloneDeep } from 'lodash'
 import { v4 } from 'uuid'
+import { Operation } from '../types'
 
 const {
   getAllApis: getAllApisRequest,
+  deleteOperation: deleteOperationRequest,
 } = api
-
-export interface Operation {
-  id?: number | string
-  name: string
-  key: string
-  relatedApi: string
-  createdAt?: string
-}
 
 interface Props {
   value?: Operation[]
   onChange?: (val: Operation[]) => void
+  onDeleteOperation?: ()=>void
 }
 
 const OperationEdit: React.FC<Props> = (props: Props) => {
-  const { value, onChange } = props
+  const { value, onChange, onDeleteOperation } = props
 
   const { t } = useTranslation()
 
@@ -39,8 +34,19 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     manual: true,
   })
 
+  const {
+    run: deleteOperation,
+    loading: deleting,
+  } = useRequest((id) => deleteOperationRequest({ id }), {
+    manual: true,
+    onSuccess() {
+      if (onDeleteOperation) {
+        onDeleteOperation()
+      }
+    },
+  })
+
   const onChangeValue = useCallback((id, key, val) => {
-    console.log(value)
     const tmp = cloneDeep(value || [])
     tmp.some((item: Operation) => {
       if (item.id === id) {
@@ -52,10 +58,14 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     onChange!(tmp)
   }, [value, onChange])
 
-  const deleteOperation = useCallback((id) => {
+  const onClickDeleteTmpOperation = useCallback((id) => {
     const tmp = cloneDeep(value || []).filter((row) => row.id !== id)
     onChange!(tmp)
   }, [value, onChange])
+
+  const onClickDeleteOperation = useCallback((id) => {
+    deleteOperation(id)
+  }, [deleteOperation])
 
   const columns = useMemo(() => [
     {
@@ -75,8 +85,17 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     {
       title: t('Operation api'),
       dataIndex: 'relatedApi',
+      width: 300,
       render: (text: string, row: Operation) => (
-        <Select bordered={false} size="small" value={row.relatedApi} loading={loading} onChange={(e) => onChangeValue(row.id, 'relatedApi', e)}>
+        <Select
+          style={{ width: 280 }}
+          bordered={false}
+          size="small"
+          showSearch
+          value={row.relatedApi}
+          loading={loading}
+          onChange={(e) => onChangeValue(row.id, 'relatedApi', e)}
+        >
           {apiList && apiList.map((api) => (
             <Select.Option key={api} value={api}>{api}</Select.Option>
           ))}
@@ -87,10 +106,14 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       title: t('Operation'),
       dataIndex: 'id',
       render: (text: string, row: Operation) => (
-        <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => deleteOperation(row.id)}></Button>
+        (row.id?.toString() as string).indexOf('tmp') >= 0 ? (
+          <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => onClickDeleteTmpOperation(row.id)}></Button>
+        ) : (
+          <Button size="small" type="text" icon={<DeleteOutlined />} onClick={() => onClickDeleteOperation(row.id)}></Button>
+        )
       ),
     },
-  ], [])
+  ], [apiList, onClickDeleteTmpOperation, onClickDeleteOperation, loading, onChangeValue, t])
 
   const onClickAddOperation = useCallback(() => {
     const tmp = [{
@@ -99,7 +122,6 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       key: '',
       relatedApi: '',
     }, ...(value || [])]
-    console.log(tmp)
     onChange!(tmp)
   }, [value, onChange])
 
@@ -132,6 +154,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
 OperationEdit.defaultProps = {
   value: [],
   onChange: (val) => { },
+  onDeleteOperation: () => {},
 }
 
 export default React.memo(OperationEdit)

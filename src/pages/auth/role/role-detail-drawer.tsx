@@ -12,10 +12,11 @@ import React, {
 import { useTranslation } from 'react-i18next'
 
 import api from '@/service'
+import { Operation } from '../types'
 
 const {
-  getAuth: getAuthRequest,
-  getRole: getRoleDetailRequest,
+  getAllOperations: getAllOperationsRequest,
+  getRoleDetail: getRoleDetailRequest,
   addRole: addRoleRequest,
   updateRole: updateRoleRequest,
 } = api
@@ -55,9 +56,9 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation()
   const [form] = Form.useForm()
   const [role, setRoleDetail] = useState<RoleDetail | null>(null)
-  const [authList, setAuthList] = useState([])
+  const [operationList, setOperationList] = useState([])
   const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([])
-  const [selectedAuthIds, setSelecetedAuthIds] = useState<number[]>([])
+  const [selectedOperationIds, setSelecetedOperationIds] = useState<number[]>([])
 
   // 将角色权限转换成树结构
   function transformRoleAuthData(data: Auth[]) {
@@ -133,21 +134,22 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           name: e.name,
           description: e.description,
         })
-        setCheckedKeys(e.checkedNumberKeys)
-        setSelecetedAuthIds(
-          e.checkedNumberKeys.filter((item: any) => typeof item === 'number'),
+        const roleOperationIds = e.operations.map((operation: Operation) => operation.id)
+        setCheckedKeys(roleOperationIds)
+        setSelecetedOperationIds(
+          roleOperationIds.filter((item: any) => typeof item === 'number'),
         )
       },
     },
   )
 
-  const { run: getAuthList, loading: getAuthLoading } = useRequest(
-    () => getAuthRequest(),
+  const { run: getAllOperations, loading: getAuthLoading } = useRequest(
+    () => getAllOperationsRequest(),
     {
       manual: true,
       onSuccess(e: any) {
-        setAuthList(e)
-        setSelecetedAuthIds([])
+        setOperationList(e)
+        setSelecetedOperationIds([])
         form.setFieldsValue({
           name: '',
           description: '',
@@ -188,17 +190,17 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
         id,
         name: values.name,
         description: values.description,
-        auth: selectedAuthIds,
+        operationIds: selectedOperationIds,
       })
     } else {
       // 新增
       addRole({
         name: values.name,
         description: values.description,
-        auth: selectedAuthIds,
+        operationIds: selectedOperationIds,
       })
     }
-  }, [addRole, form, id, selectedAuthIds, updateRole])
+  }, [addRole, form, id, selectedOperationIds, updateRole])
 
   const onCheck = useCallback(
     (
@@ -212,21 +214,21 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           tmp.push(item.id)
         }
       })
-      setSelecetedAuthIds(tmp)
+      setSelecetedOperationIds(tmp)
     },
     [],
   )
 
   useEffect(() => {
     if (visible) {
+      getAllOperations()
       if (id) {
         getRoleDetail(id)
       } else {
         setRoleDetail(null)
-        getAuthList()
       }
     }
-  }, [getAuthList, getRoleDetail, id, visible])
+  }, [getAllOperations, getRoleDetail, id, visible])
 
   return (
     <Drawer
@@ -269,13 +271,14 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab={t('Basic permission')} key="1">
             {((role && role.auth && role.auth.length > 0)
-              || authList.length > 0) && (
+              || operationList.length > 0) && (
               <Tree
                 checkable
+                fieldNames={{ title: 'name', key: 'id', children: 'operations' }}
                 onCheck={onCheck}
                 defaultExpandAll
                 checkedKeys={checkedKeys}
-                treeData={(role && (role.auth as any)) || authList}
+                treeData={(role && (role.auth as any)) || operationList}
               />
             )}
           </Tabs.TabPane>
