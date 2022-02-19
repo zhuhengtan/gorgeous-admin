@@ -9,28 +9,28 @@ import { useTranslation } from 'react-i18next'
 
 import api from '@/service'
 
-import AddUserForm from './add-user-form'
+import AddAdminForm from './add-admin-form'
 
-import { User, Role } from '../types'
+import { Admin, Role } from '../types'
 
 const {
-  getUsers: getUsersRequest,
-  changeUserStatus: changeUserStatusRequest,
+  getAdmins: getAdminsRequest,
+  changeAdminStatus: changeAdminStatusRequest,
   resetPassword: resetPasswordRequest,
-  deleteUser: deleteUserRequest,
+  deleteAdmin: deleteAdminRequest,
 } = api
 
-const Users: React.FC = () => {
+const Admins: React.FC = () => {
   const { t } = useTranslation()
   const [filter, setFilter] = useState({
     name: '',
   })
-  const [users, setUsers] = useState<User[]>([])
+  const [admins, setAdmins] = useState<Admin[]>([])
   const [addPanelVisible, setAddPanelVisible] = useState<boolean>(false)
-  const [selectedUserId, setSelectedUserId] = useState<number>(0)
+  const [selectedAdminId, setSelectedAdminId] = useState<number>(0)
 
-  const { run: getUsers, loading: getLoading, pagination } = usePagination(
-    ({ current, pageSize }, filters) => getUsersRequest({
+  const { run: getAdmins, loading: getLoading, pagination } = usePagination(
+    ({ current, pageSize }, filters) => getAdminsRequest({
       current_page: current,
       page_size: pageSize,
       ...filters,
@@ -39,17 +39,17 @@ const Users: React.FC = () => {
       manual: true,
       throttleWait: 500,
       onSuccess(e: any) {
-        setUsers(e.list)
+        setAdmins(e.list)
       },
     },
   )
 
-  const { run: changeUserStatus } = useRequest(
-    ({ id, status }) => changeUserStatusRequest({ id, status }),
+  const { run: changeAdminStatus } = useRequest(
+    ({ id, status }) => changeAdminStatusRequest({ id, status }),
     {
       manual: true,
       onSuccess() {
-        getUsers({ ...pagination }, filter)
+        getAdmins({ ...pagination }, filter)
       },
     },
   )
@@ -61,10 +61,10 @@ const Users: React.FC = () => {
     },
   )
 
-  const { run: removeUser } = useRequest((id) => deleteUserRequest({ id }), {
+  const { run: removeAdmin } = useRequest((id) => deleteAdminRequest({ id }), {
     manual: true,
     onSuccess() {
-      getUsers({ current: pagination.current, pageSize: pagination.pageSize }, filter)
+      getAdmins({ current: pagination.current, pageSize: pagination.pageSize }, filter)
     },
   })
 
@@ -74,7 +74,7 @@ const Users: React.FC = () => {
       dataIndex: 'id',
     },
     {
-      title: t('Username'),
+      title: t('Adminname'),
       dataIndex: 'name',
     },
     {
@@ -82,15 +82,15 @@ const Users: React.FC = () => {
       dataIndex: 'email',
     },
     {
-      title: t('User type'),
-      dataIndex: 'user_type',
-      render: (text: string, record: User) => (
+      title: t('Admin type'),
+      dataIndex: 'admin_type',
+      render: (text: string, record: Admin) => (
         <Space size="middle">
-          {record.userType === 0 && (
-            <Tag color="blue">{t('System user')}</Tag>
+          {record.adminType === 0 && (
+            <Tag color="blue">{t('System admin')}</Tag>
           )}
-          {record.userType === 1 && (
-            <Tag color="orange">{t('Created user')}</Tag>
+          {record.adminType === 1 && (
+            <Tag color="orange">{t('Created admin')}</Tag>
           )}
         </Space>
       ),
@@ -98,7 +98,7 @@ const Users: React.FC = () => {
     {
       title: t('Role name'),
       dataIndex: 'role_name',
-      render: (text: string, record: User) => (
+      render: (text: string, record: Admin) => (
         <Space size="middle">
           {record.roles.map((role: Role) => (
             <Tag key={role.id} color="success">{role.name}</Tag>
@@ -109,7 +109,7 @@ const Users: React.FC = () => {
     {
       title: t('Status'),
       dataIndex: 'status',
-      render: (text: string, record: User) => (
+      render: (text: string, record: Admin) => (
         <Space size="middle">
           {record.status === 0 && <Tag color="red">{t('Disable')}</Tag>}
           {record.status === 1 && <Tag color="success">{t('Enable')}</Tag>}
@@ -123,21 +123,21 @@ const Users: React.FC = () => {
     {
       title: t('Operation'),
       dataIndex: 'operation',
-      render: (text: string, record: User) => (
+      render: (text: string, record: Admin) => (
         <Space size="middle">
           <Button
             size="small"
             type="primary"
             onClick={() => {
-              setSelectedUserId(record.id)
+              setSelectedAdminId(record.id)
               setAddPanelVisible(true)
             }}
           >{t('Edit')}
           </Button>
           <Popconfirm
-            title={t('Are you sure to remove this user')}
+            title={t('Are you sure to remove this admin')}
             onConfirm={() => {
-              removeUser(record.id)
+              removeAdmin(record.id)
             }}
             okText={t('Confirm')}
             cancelText={t('Cancel')}
@@ -146,7 +146,7 @@ const Users: React.FC = () => {
               {t('Remove')}
             </Button>
           </Popconfirm>
-          {record.userType === 1 && (
+          {record.adminType === 1 && (
             <Popconfirm
               title={t('Are you sure to reset password')}
               onConfirm={() => {
@@ -166,7 +166,8 @@ const Users: React.FC = () => {
   ]
 
   useEffect(() => {
-    getUsers({ current: 1, pageSize: 10 }, filter)
+    getAdmins({ current: 1, pageSize: 10 }, filter)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -174,12 +175,12 @@ const Users: React.FC = () => {
       <div className="filter-container">
         <div>
           <Input
-            placeholder={t('Filter with username or email')}
+            placeholder={t('Filter with adminname or email')}
             allowClear
             onChange={(e) => {
               e.persist()
               setFilter({ name: e.currentTarget.value })
-              getUsers(
+              getAdmins(
                 {
                   current: 1,
                   pageSize: pagination.pageSize,
@@ -195,27 +196,27 @@ const Users: React.FC = () => {
             setAddPanelVisible(true)
           }}
         >
-          {t('Add user')}
+          {t('Add admin')}
         </Button>
       </div>
       <Table
         loading={getLoading}
         rowKey="id"
-        dataSource={users}
+        dataSource={admins}
         columns={columns}
         pagination={pagination}
       />
-      <AddUserForm
-        id={selectedUserId}
+      <AddAdminForm
+        id={selectedAdminId}
         visible={addPanelVisible}
         setVisible={setAddPanelVisible}
         onSuccess={() => {
-          setSelectedUserId(0)
-          getUsers({ ...pagination }, filter)
+          setSelectedAdminId(0)
+          getAdmins({ ...pagination }, filter)
         }}
       />
     </div>
   )
 }
 
-export default React.memo(Users)
+export default React.memo(Admins)

@@ -11,25 +11,25 @@ import { useHistory } from 'react-router'
 
 import { getCookie } from '@/utils/cookie'
 import api from '@/service'
-import { UserInfo } from '@/type'
+import { AdminInfo } from '@/type'
 
 const {
   changePassword: changePasswordRequest,
   changeAvatar: changeAvatarRequest,
 } = api
 
-const UserInfoComponent: React.FC = () => {
+const AdminInfoComponent: React.FC = () => {
   const { t } = useTranslation()
   const history = useHistory()
   const [, setToken] = useLocalStorageState<string>('TOKEN', {
     defaultValue: '',
   })
-  const [user, setUser] = useLocalStorageState<UserInfo>('USER_INFO', {
+  const [admin, setAdmin] = useLocalStorageState<AdminInfo>('USER_INFO', {
     defaultValue: {
       id: 0,
       name: '',
       email: '',
-      userType: 1,
+      adminType: 1,
       avatar: '',
       status: 0,
     },
@@ -50,11 +50,11 @@ const UserInfoComponent: React.FC = () => {
       manual: true,
       onSuccess() {
         setToken('')
-        setUser({
+        setAdmin({
           id: 0,
           name: '',
           email: '',
-          userType: 1,
+          adminType: 1,
           avatar: '',
           status: 0,
         })
@@ -74,14 +74,14 @@ const UserInfoComponent: React.FC = () => {
   // 修改密码
   const submitChangePassword = useCallback(async () => {
     const fields = form.getFieldsValue()
-    if (user && user.id) {
+    if (admin && admin.id) {
       changePassword({
-        id: user.id,
+        id: admin.id,
         old_password: fields.old_password,
         new_password: fields.new_password,
       })
     }
-  }, [form, changePassword, user])
+  }, [form, changePassword, admin])
 
   const uploadButton = (
     <div>
@@ -115,7 +115,7 @@ const UserInfoComponent: React.FC = () => {
                   if (info.file.status === 'done') {
                     message.success(`${info.file.name} ${t('Upload success')}`)
                     changeAvatar({
-                      id: user.id,
+                      id: admin.id,
                       avatar_url: info.file.response.data,
                     })
                   } else if (info.file.status === 'error') {
@@ -124,9 +124,9 @@ const UserInfoComponent: React.FC = () => {
                   setLoading(false)
                 }}
               >
-                {user.avatar ? (
+                {admin.avatar ? (
                   <img
-                    src={user.avatar}
+                    src={admin.avatar}
                     alt="avatar"
                     style={{ width: '100%', cursor: 'pointer' }}
                   />
@@ -141,13 +141,13 @@ const UserInfoComponent: React.FC = () => {
               </Button> */}
             </Col>
           </Row>
-          <Row className="item-label">{t('Username')}</Row>
-          <Row className="item-content">{user.name}</Row>
+          <Row className="item-label">{t('Adminname')}</Row>
+          <Row className="item-content">{admin.name}</Row>
           <Row className="item-label">{t('Email')}</Row>
-          <Row className="item-content">{user.email}</Row>
-          <Row className="item-label">{t('User type')}</Row>
+          <Row className="item-content">{admin.email}</Row>
+          <Row className="item-label">{t('Admin type')}</Row>
           <Row className="item-content">
-            {user.userType === 1 ? t('Inner user') : t('Outer user')}
+            {admin.adminType === 1 ? t('Inner admin') : t('Outer admin')}
           </Row>
         </Col>
       </Row>
@@ -159,7 +159,7 @@ const UserInfoComponent: React.FC = () => {
           <Row className="item-label">{t('Password')}</Row>
           <Row className="item-content">
             <Col>******</Col>
-            {user.userType === 2 && (
+            {admin.adminType === 2 && (
               <Col span={1} push={24}>
                 <Button
                   type="link"
@@ -252,4 +252,4 @@ const UserInfoComponent: React.FC = () => {
   )
 }
 
-export default React.memo(UserInfoComponent)
+export default React.memo(AdminInfoComponent)

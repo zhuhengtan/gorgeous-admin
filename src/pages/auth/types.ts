@@ -21,10 +21,10 @@ export interface Role {
   Operations: []
 }
 
-export interface User {
+export interface Admin {
   id: number
   name: string
-  userType: number
+  adminType: number
   status: number
   avatar: string
   createdAt: string

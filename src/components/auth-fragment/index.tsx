@@ -5,7 +5,7 @@ import React, {
   useContext,
 } from 'react'
 
-import { UserAuthContext } from '@/context/UserAuthContext'
+import { AdminAuthContext } from '@/context/AdminAuthContext'
 
 type ReactNode =
   | ReactChild
@@ -23,9 +23,9 @@ interface Props {
 
 const AuthFragment: React.FC<Props> = (props: Props) => {
   const { otherConditions, authKey, children } = props
-  const userAuth = useContext(UserAuthContext)
-  const haveAuth = userAuth[window.location.pathname]
-    && userAuth[window.location.pathname].indexOf(authKey) >= 0
+  const adminAuth = useContext(AdminAuthContext)
+  const haveAuth = adminAuth[window.location.pathname]
+    && adminAuth[window.location.pathname].indexOf(authKey) >= 0
 
   return <>{otherConditions && haveAuth && children}</>
 }

@@ -3,7 +3,7 @@ import { Avatar, Dropdown, Menu } from 'antd'
 import React, { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useHistory } from 'react-router'
-import { UserInfo } from '@/type'
+import { AdminInfo } from '@/type'
 
 const CustomAvatar: FC = () => {
   const { t } = useTranslation()
@@ -12,27 +12,27 @@ const CustomAvatar: FC = () => {
   const [, setToken] = useLocalStorageState<string>('TOKEN', {
     defaultValue: '',
   })
-  const [userInfo, setUserInfo] = useLocalStorageState<UserInfo | string>(
+  const [adminInfo, setAdminInfo] = useLocalStorageState<AdminInfo | string>(
     'USER_INFO',
     {
       defaultValue: '',
     },
   )
 
-  const goToUserInfo = useCallback(() => {
-    history.push('/user-info')
+  const goToAdminInfo = useCallback(() => {
+    history.push('/admin-info')
   }, [history])
 
   const logOut = useCallback(() => {
     setToken('')
-    setUserInfo('')
+    setAdminInfo('')
     history.push('/login')
-  }, [history, setToken, setUserInfo])
+  }, [history, setToken, setAdminInfo])
 
   const menu = (
     <Menu>
-      <Menu.Item key="user-info" onClick={goToUserInfo}>
-        <span>{t('User info')}</span>
+      <Menu.Item key="admin-info" onClick={goToAdminInfo}>
+        <span>{t('Admin info')}</span>
       </Menu.Item>
       <Menu.Item key="log-out" onClick={logOut}>
         <a>{t('Logout')}</a>
@@ -42,14 +42,14 @@ const CustomAvatar: FC = () => {
   return (
     <div>
       <Dropdown overlay={menu} placement="bottomCenter">
-        {userInfo && (userInfo as UserInfo).avatar ? (
-          <Avatar size="default" src={(userInfo as UserInfo).avatar} />
+        {adminInfo && (adminInfo as AdminInfo).avatar ? (
+          <Avatar size="default" src={(adminInfo as AdminInfo).avatar} />
         ) : (
           <Avatar
             size="default"
             style={{ color: '#475285', backgroundColor: 'darkgray' }}
           >
-            {(userInfo as UserInfo).name ? (userInfo as UserInfo).name[0] : ''}
+            {(adminInfo as AdminInfo).name ? (adminInfo as AdminInfo).name[0] : ''}
           </Avatar>
         )}
       </Dropdown>

@@ -16,14 +16,14 @@ import { matchPath, useHistory } from 'react-router'
 import { renderRoutes, RouteConfig } from 'react-router-config'
 import { Link } from 'react-router-dom'
 
-import { UserAuthContext } from '@/context/UserAuthContext'
 import api from '@/service'
+import { AdminAuthContext } from '@/context/AdminAuthContext'
 
 import Avatar from './avatar'
 import GlobalLan from './global-lan'
 import Logo from './logo'
 
-const { getUserAuth: getUserAuthRequest } = api
+const { getAdminAuth: getAdminAuthRequest } = api
 
 interface BreadcrumbItem {
   path: string
@@ -39,9 +39,9 @@ const CustomLayout = (props: RouteConfig) => {
   const history = useHistory()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
-  const [userAuth, setUserAuth] = useState([])
+  const [adminAuth, setAdminAuth] = useState([])
   const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
-  const [user] = useLocalStorageState('USER_INFO')
+  const [admin] = useLocalStorageState('USER_INFO')
 
   // 如果没有登录，跳转登录页
   const [token] = useLocalStorageState('TOKEN', {
@@ -146,19 +146,19 @@ const CustomLayout = (props: RouteConfig) => {
       })
   }
 
-  const { run: getUserAuth } = useRequest(() => getUserAuthRequest({ id: user.id }), {
+  const { run: getAdminAuth } = useRequest(() => getAdminAuthRequest({ id: admin.id }), {
     manual: true,
     onSuccess(e: any) {
-      setUserAuth(e.auth)
+      setAdminAuth(e.auth)
       setAuth(e.auth)
     },
   })
 
   useEffect(() => {
     if (token) {
-      getUserAuth()
+      getAdminAuth()
     }
-  }, [getUserAuth, token])
+  }, [getAdminAuth, token])
 
   const filterRoutersByPermission = useCallback(
     (routers: RouteConfig[]) => {
@@ -167,7 +167,7 @@ const CustomLayout = (props: RouteConfig) => {
         const obj = { ...router }
         if (
           obj.checkAuth
-          && Object.prototype.hasOwnProperty.call(userAuth, obj.path as string)
+          && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
         ) {
           arr.push(obj)
         }
@@ -187,11 +187,11 @@ const CustomLayout = (props: RouteConfig) => {
       })
       return arr
     },
-    [userAuth],
+    [adminAuth],
   )
 
   return (
-    <UserAuthContext.Provider value={finalAuth}>
+    <AdminAuthContext.Provider value={finalAuth}>
       <Layout className="layout-container">
         <Sider
           width={200}
@@ -245,7 +245,7 @@ const CustomLayout = (props: RouteConfig) => {
           <div className="footer">{t('APP NAME')}</div>
         </Layout>
       </Layout>
-    </UserAuthContext.Provider>
+    </AdminAuthContext.Provider>
   )
 }
 export default React.memo(CustomLayout)

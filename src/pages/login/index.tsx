@@ -22,20 +22,20 @@ function Login() {
   const [, setToken] = useLocalStorageState('TOKEN', {
     defaultValue: '',
   })
-  const [, setUserInfo] = useLocalStorageState('USER_INFO', {})
+  const [, setAdminInfo] = useLocalStorageState('USER_INFO', {})
 
   const loginSuccess = useCallback(
     (loginRes) => {
       setCookie('token', loginRes.token)
       setToken(loginRes.token)
-      setUserInfo(loginRes.user)
+      setAdminInfo(loginRes.admin)
       if (params.redirect) {
         history.push(params.redirect as string)
       } else {
         history.push('/')
       }
     },
-    [history, params.redirect, setToken, setUserInfo],
+    [history, params.redirect, setToken, setAdminInfo],
   )
 
   const { run: login, loading: loginLoading } = useRequest(

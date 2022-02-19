@@ -18,9 +18,9 @@ import { cloneDeep } from 'lodash'
 import { Role } from '../types'
 
 const {
-  getUserDetail: getUserDetailRequest,
-  addUser: addUserRequest,
-  updateUser: updateUserRequest,
+  getAdminDetail: getAdminDetailRequest,
+  addAdmin: addAdminRequest,
+  updateAdmin: updateAdminRequest,
   getAllRoles: getAllRolesRequest,
 } = api
 
@@ -31,7 +31,7 @@ interface Props {
   onSuccess?: () => void
 }
 
-const AddUserForm: React.FC<Props> = (props: Props) => {
+const AddAdminForm: React.FC<Props> = (props: Props) => {
   const {
     id, visible, setVisible, onSuccess,
   } = props
@@ -40,8 +40,8 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
   const [form] = Form.useForm()
   const [roleList, setRoleList] = useState<Role[]>([])
 
-  const { run: addUser, loading: addLoading } = useRequest(
-    (data) => addUserRequest(data),
+  const { run: addAdmin, loading: addLoading } = useRequest(
+    (data) => addAdminRequest(data),
     {
       manual: true,
       onSuccess() {
@@ -54,8 +54,8 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     },
   )
 
-  const { run: updateUser, loading: updateLoading } = useRequest(
-    (data) => updateUserRequest(data),
+  const { run: updateAdmin, loading: updateLoading } = useRequest(
+    (data) => updateAdminRequest(data),
     {
       manual: true,
       onSuccess() {
@@ -68,7 +68,7 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     },
   )
 
-  const { run: getUserDetail, loading: getLoading } = useRequest((id) => getUserDetailRequest({ id }), {
+  const { run: getAdminDetail, loading: getLoading } = useRequest((id) => getAdminDetailRequest({ id }), {
     manual: true,
     onSuccess(res) {
       const formData: any = cloneDeep(res)
@@ -95,22 +95,22 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
     await form.validateFields()
     const data = form.getFieldsValue()
     if (id) {
-      updateUser(data)
+      updateAdmin(data)
     } else {
-      addUser(data)
+      addAdmin(data)
     }
-  }, [addUser, form, id, updateUser])
+  }, [addAdmin, form, id, updateAdmin])
 
   useEffect(() => {
     if (id) {
-      getUserDetail(id)
+      getAdminDetail(id)
       getAllRoles()
     }
-  }, [getAllRoles, getUserDetail, id])
+  }, [getAllRoles, getAdminDetail, id])
 
   return (
     <Modal
-      title={t('Add user')}
+      title={t('Add admin')}
       visible={visible}
       onCancel={handleCancel}
       onOk={onClickConfirm}
@@ -127,11 +127,11 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
         </Form.Item>
         <Form.Item
           name="name"
-          label={t('Username')}
-          rules={[{ required: true, message: t('Please input username') }]}
+          label={t('Adminname')}
+          rules={[{ required: true, message: t('Please input adminname') }]}
         >
           <Input
-            placeholder={t('Please input username')}
+            placeholder={t('Please input adminname')}
           />
         </Form.Item>
         <Form.Item
@@ -181,8 +181,8 @@ const AddUserForm: React.FC<Props> = (props: Props) => {
   )
 }
 
-AddUserForm.defaultProps = {
+AddAdminForm.defaultProps = {
   onSuccess: () => {},
 }
 
-export default React.memo(AddUserForm)
+export default React.memo(AddAdminForm)

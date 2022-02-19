@@ -127,6 +127,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     getAllApis()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

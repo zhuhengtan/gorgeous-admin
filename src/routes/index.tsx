@@ -7,11 +7,11 @@ import Layout from '@/components/layout'
 import SecondLayout from '@/components/layout/second-layout'
 import AccessDeny from '@/pages/access-deny'
 import Roles from '@/pages/auth/role'
-import Users from '@/pages/auth/user'
+import Admins from '@/pages/auth/admin'
 import Pages from '@/pages/auth/page'
 import Login from '@/pages/login'
 import NotFound from '@/pages/not-found'
-import UserInfo from '@/pages/user-info'
+import AdminInfo from '@/pages/admin-info'
 
 const routes: RouteConfig[] = [
   {
@@ -26,13 +26,13 @@ const routes: RouteConfig[] = [
         path: '/',
         exact: true,
         hidden: true,
-        render: () => <Redirect to="/user-info" />,
+        render: () => <Redirect to="/admin-info" />,
       },
       {
-        path: '/user-info',
+        path: '/admin-info',
         exact: true,
         hidden: true,
-        component: UserInfo,
+        component: AdminInfo,
       },
       {
         path: '/auth',
@@ -53,10 +53,10 @@ const routes: RouteConfig[] = [
             component: Roles,
           },
           {
-            path: '/auth/user',
-            name: 'User list',
+            path: '/auth/admin',
+            name: 'Admin list',
             checkAuth: true,
-            component: Users,
+            component: Admins,
           },
         ],
       },

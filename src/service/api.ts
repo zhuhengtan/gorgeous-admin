@@ -2,19 +2,19 @@ import { ApiList } from './type'
 
 const apiList: ApiList = {
   login: 'POST /api/auth/login',
-  getUserAuth: 'GET /api/auth/user-auth',
+  getAdminAuth: 'GET /api/auth/admin-auth',
 
   // 用户管理
-  getUsers: 'GET /api/auth/users',
-  getUserDetail: 'GET /api/auth/user',
-  addUser: 'POST /api/auth/user',
-  changeAvatar: 'POST /api/auth/user/update-avatar',
-  updateUser: 'PUT /api/auth/user',
-  deleteUser: 'DELETE /api/auth/user',
+  getAdmins: 'GET /api/auth/admins',
+  getAdminDetail: 'GET /api/auth/admin',
+  addAdmin: 'POST /api/auth/admin',
+  changeAvatar: 'POST /api/auth/admin/update-avatar',
+  updateAdmin: 'PUT /api/auth/admin',
+  deleteAdmin: 'DELETE /api/auth/admin',
   getAllRoles: 'GET /api/auth/all-roles',
-  resetPassword: 'POST /api/auth/user/reset-password',
+  resetPassword: 'POST /api/auth/admin/reset-password',
   // changePassword: 'PUT /api/change-password',
-  // changeUserStatus: 'PUT /api/forbidden-or-active',
+  // changeAdminStatus: 'PUT /api/forbidden-or-active',
 
   // 角色权限管理
   getAllOperations: 'GET /api/auth/all-operations',

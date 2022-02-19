@@ -84,6 +84,7 @@ const Pages: React.FC = () => {
 
   useEffect(() => {
     getPageList({ current: 1, pageSize: 10 })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const columns = useMemo(() => [

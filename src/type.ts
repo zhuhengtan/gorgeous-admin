@@ -6,11 +6,11 @@ export interface JsonObject {
   [key: string]: null | number | string | Array<JsonObject> | JsonObject
 }
 
-export interface UserInfo {
+export interface AdminInfo {
   id: number
   name: string
   email: string
-  userType: number
+  adminType: number
   avatar: string
   status: number
 }

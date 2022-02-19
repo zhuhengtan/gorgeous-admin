@@ -68,8 +68,8 @@ const PCLogin: React.FC<Props> = (props: Props) => {
             </Form.Item>
             <Form.Item name="is_inner" valuePropName="checked">
               <Switch
-                checkedChildren={t('Inner user')}
-                unCheckedChildren={t('Outer user')}
+                checkedChildren={t('Inner admin')}
+                unCheckedChildren={t('Outer admin')}
                 defaultChecked
               />
             </Form.Item>
