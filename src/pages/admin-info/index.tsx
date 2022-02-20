@@ -1,9 +1,9 @@
 import './index.less'
 
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { useLocalStorageState, useRequest } from 'ahooks'
+import { useLocalStorageState, useRequest, useCountDown } from 'ahooks'
 import {
-  Button, Col, Form, Input, message, Modal, Row, Upload,
+  Button, Col, Form, Input, message, Modal, Row, Upload, Space,
 } from 'antd'
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,10 +12,12 @@ import { useHistory } from 'react-router'
 import { getCookie } from '@/utils/cookie'
 import api from '@/service'
 import { AdminInfo } from '@/type'
+import { showMessage } from '@/utils'
 
 const {
   changePassword: changePasswordRequest,
   changeAvatar: changeAvatarRequest,
+  sendChangePwdCode: sendChangePwdCodeRequest,
 } = api
 
 const AdminInfoComponent: React.FC = () => {
@@ -37,6 +39,11 @@ const AdminInfoComponent: React.FC = () => {
 
   const [showFormDialog, setShowFormDialog] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [targetDate, setTargetDate] = useLocalStorageState<number>('CHANGE_PWD_CODE')
+
+  const [countdown] = useCountDown({
+    targetDate,
+  })
 
   const [form] = Form.useForm()
   const formItemLayout = {
@@ -67,18 +74,26 @@ const AdminInfoComponent: React.FC = () => {
     (data) => changeAvatarRequest(data),
     {
       manual: true,
-      onSuccess() {},
+      onSuccess() { },
     },
   )
+
+  const { run: sendChangePwd } = useRequest(() => sendChangePwdCodeRequest({ email: admin.email }), {
+    manual: true,
+    onSuccess() {
+      showMessage(t('Get email code success'))
+      setTargetDate(Date.now() + 60 * 5 * 1000)
+    },
+  })
 
   // 修改密码
   const submitChangePassword = useCallback(async () => {
     const fields = form.getFieldsValue()
     if (admin && admin.id) {
       changePassword({
-        id: admin.id,
-        old_password: fields.old_password,
-        new_password: fields.new_password,
+        email: fields.email,
+        code: fields.code,
+        newPassword: fields.newPassword,
       })
     }
   }, [form, changePassword, admin])
@@ -90,7 +105,7 @@ const AdminInfoComponent: React.FC = () => {
     </div>
   )
   return (
-    <div>
+    <>
       <Row justify="center" align="top">
         <Col span={2} pull={2} className="title">
           {t('Base info')}
@@ -147,7 +162,7 @@ const AdminInfoComponent: React.FC = () => {
           <Row className="item-content">{admin.email}</Row>
           <Row className="item-label">{t('Admin type')}</Row>
           <Row className="item-content">
-            {admin.adminType === 1 ? t('Inner admin') : t('Outer admin')}
+            {admin.adminType === 1 ? t('System admin') : t('Created admin')}
           </Row>
         </Col>
       </Row>
@@ -159,18 +174,21 @@ const AdminInfoComponent: React.FC = () => {
           <Row className="item-label">{t('Password')}</Row>
           <Row className="item-content">
             <Col>******</Col>
-            {admin.adminType === 2 && (
-              <Col span={1} push={24}>
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setShowFormDialog(true)
-                  }}
-                >
-                  {t('Edit password')}
-                </Button>
-              </Col>
-            )}
+            <Col span={1} push={24}>
+              <Button
+                type="link"
+                onClick={() => {
+                  setShowFormDialog(true)
+                  form.setFieldsValue({
+                    email: admin.email,
+                    code: '',
+                    newPassword: '',
+                  })
+                }}
+              >
+                {t('Edit password')}
+              </Button>
+            </Col>
           </Row>
         </Col>
       </Row>
@@ -178,6 +196,7 @@ const AdminInfoComponent: React.FC = () => {
       <Modal
         title={t('Edit password')}
         visible={showFormDialog}
+        maskClosable={false}
         onOk={submitChangePassword}
         onCancel={() => setShowFormDialog(false)}
       >
@@ -188,23 +207,37 @@ const AdminInfoComponent: React.FC = () => {
           initialValues={{ layout: formLayout }}
         >
           <Form.Item
-            label={t('Old password')}
-            name="old_password"
+            label={t('Email')}
+            name="email"
+          >
+            <Input disabled />
+          </Form.Item>
+          <Form.Item
+            label={t('Email code')}
+            name="code"
             rules={[
               {
                 required: true,
-                message: t('Please input old password'),
+                message: t('Please input email code'),
               },
             ]}
           >
-            <Input
-              type="password"
-              placeholder={t('Please input old password')}
-            />
+            <Space>
+              <Input
+                placeholder={t('Please input email code')}
+              />
+              <Button
+                type="primary"
+                disabled={countdown > 0}
+                onClick={sendChangePwd}
+              >
+                {countdown === 0 ? t('Get email code') : t('Get email code again', { countdown: Math.round(countdown / 1000) })}
+              </Button>
+            </Space>
           </Form.Item>
           <Form.Item
-            label={t('New password')}
-            name="new_password"
+            label={t('Password')}
+            name="newPassword"
             rules={[
               {
                 required: true,
@@ -215,40 +248,12 @@ const AdminInfoComponent: React.FC = () => {
           >
             <Input
               type="password"
-              placeholder={t('Please input new password')}
-            />
-          </Form.Item>
-          <Form.Item
-            label={t('Confirm password')}
-            name="new_password2"
-            rules={[
-              {
-                required: true,
-                message: t('Password regex tips'),
-                pattern: /^(?![A-Za-z]+$)(?![0-9]+$)[\w!@#$%^&*_-]{8,}$/,
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('new_password') === value) {
-                    return Promise.resolve()
-                  }
-                  return Promise.reject(
-                    new Error(
-                      t('The two passwords that you entered do not match'),
-                    ),
-                  )
-                },
-              }),
-            ]}
-          >
-            <Input
-              type="password"
-              placeholder={t('Please enter the password again')}
+              placeholder={t('Please input pwd')}
             />
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   )
 }
 

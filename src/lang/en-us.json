@@ -35,7 +35,7 @@
   "Auth management": "Auth management",
   "Admin management": "Admin management",
   "Admin list": "Admin list",
-  "Filter with adminname or email": "Filter with adminname or email",
+  "Filter with admin name or email": "Filter with admin name or email",
   "Add admin": "Add admin",
   "Id": "ID",
   "Adminname": "Adminname",
@@ -57,7 +57,7 @@
   "Remove": "Remove",
   "Are you sure to remove this admin":"Are you sure to remove this admin?",
   "Please select admin": "Please select admin",
-  "Please input adminname": "Please input adminname",
+  "Please input admin name": "Please input admin name",
   "Please input email": "Please input email",
   
   "Role list":"Role list",

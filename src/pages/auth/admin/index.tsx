@@ -175,7 +175,7 @@ const Admins: React.FC = () => {
       <div className="filter-container">
         <div>
           <Input
-            placeholder={t('Filter with adminname or email')}
+            placeholder={t('Filter with admin name or email')}
             allowClear
             onChange={(e) => {
               e.persist()

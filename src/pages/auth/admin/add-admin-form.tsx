@@ -128,10 +128,10 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
         <Form.Item
           name="name"
           label={t('Adminname')}
-          rules={[{ required: true, message: t('Please input adminname') }]}
+          rules={[{ required: true, message: t('Please input admin name') }]}
         >
           <Input
-            placeholder={t('Please input adminname')}
+            placeholder={t('Please input admin name')}
           />
         </Form.Item>
         <Form.Item
