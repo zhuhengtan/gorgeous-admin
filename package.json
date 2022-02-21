@@ -41,7 +41,8 @@
   },
   "scripts": {
     "start": "env-cmd -e development craco start",
-    "build": "env-cmd -e production craco build"
+    "build": "env-cmd -e production craco build",
+    "docs": "docsify serve ./docs -p 3001"
   },
   "browserslist": {
     "production": [
