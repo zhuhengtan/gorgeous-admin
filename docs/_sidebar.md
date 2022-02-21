@@ -4,9 +4,9 @@
 
 - Project detail
 
-  - [Authentication design](/zh-cn/authentication-design.md)
-  - [Front end](/zh-cn/frontend.md)
-  - [Back end](/zh-cn/backend.md)
+  - [Authentication design](/en-us/authentication-design.md)
+  - [Front end](/en-us/frontend.md)
+  - [Back end](/en-us/backend.md)
 
 - Guide
 
