@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import api from '@/service'
 
+import AuthFragment from '@/components/auth-fragment'
 import AddAdminForm from './add-admin-form'
 
 import { Admin, Role } from '../types'
@@ -134,19 +135,21 @@ const Admins: React.FC = () => {
             }}
           >{t('Edit')}
           </Button>
-          <Popconfirm
-            title={t('Are you sure to remove this admin')}
-            onConfirm={() => {
-              removeAdmin(record.id)
-            }}
-            okText={t('Confirm')}
-            cancelText={t('Cancel')}
-          >
-            <Button danger size="small">
-              {t('Remove')}
-            </Button>
-          </Popconfirm>
-          {record.adminType === 1 && (
+          <AuthFragment authKey="delete">
+            <Popconfirm
+              title={t('Are you sure to remove this admin')}
+              onConfirm={() => {
+                removeAdmin(record.id)
+              }}
+              okText={t('Confirm')}
+              cancelText={t('Cancel')}
+            >
+              <Button danger size="small">
+                {t('Remove')}
+              </Button>
+            </Popconfirm>
+          </AuthFragment>
+          <AuthFragment authKey="reset-password" otherConditions={record.adminType === 1}>
             <Popconfirm
               title={t('Are you sure to reset password')}
               onConfirm={() => {
@@ -159,7 +162,7 @@ const Admins: React.FC = () => {
                 {t('Reset password')}
               </Button>
             </Popconfirm>
-          )}
+          </AuthFragment>
         </Space>
       ),
     },
@@ -190,22 +193,26 @@ const Admins: React.FC = () => {
             }}
           />
         </div>
-        <Button
-          type="primary"
-          onClick={() => {
-            setAddPanelVisible(true)
-          }}
-        >
-          {t('Add admin')}
-        </Button>
+        <AuthFragment authKey="add">
+          <Button
+            type="primary"
+            onClick={() => {
+              setAddPanelVisible(true)
+            }}
+          >
+            {t('Add admin')}
+          </Button>
+        </AuthFragment>
       </div>
-      <Table
-        loading={getLoading}
-        rowKey="id"
-        dataSource={admins}
-        columns={columns}
-        pagination={pagination}
-      />
+      <AuthFragment authKey="view">
+        <Table
+          loading={getLoading}
+          rowKey="id"
+          dataSource={admins}
+          columns={columns}
+          pagination={pagination}
+        />
+      </AuthFragment>
       <AddAdminForm
         id={selectedAdminId}
         visible={addPanelVisible}

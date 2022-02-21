@@ -8,6 +8,7 @@ import api from '@/service'
 import { usePagination, useRequest } from 'ahooks'
 import { useTranslation } from 'react-i18next'
 import { showMessage } from '@/utils'
+import AuthFragment from '@/components/auth-fragment'
 import OperationEdit from './operation'
 import { Operation, Page } from '../types'
 
@@ -109,25 +110,29 @@ const Pages: React.FC = () => {
       title: t('Operation'),
       render: (text: string, row: Page) => (
         <Space>
-          <Button
-            size="small"
-            type="primary"
-            onClick={() => {
-              setEditingId(row.id)
-              getPageDetail(row.id)
-            }}
-          >{t('Edit')}
-          </Button>
-          <Popconfirm
-            title={t('Are you sure to delete')}
-            onConfirm={() => {
-              deletePage(row.id)
-            }}
-            okText={t('Confirm')}
-            cancelText={t('Cancel')}
-          >
-            <Button size="small" type="primary" danger>{t('Delete')}</Button>
-          </Popconfirm>
+          <AuthFragment authKey="edit">
+            <Button
+              size="small"
+              type="primary"
+              onClick={() => {
+                setEditingId(row.id)
+                getPageDetail(row.id)
+              }}
+            >{t('Edit')}
+            </Button>
+          </AuthFragment>
+          <AuthFragment authKey="delete">
+            <Popconfirm
+              title={t('Are you sure to delete')}
+              onConfirm={() => {
+                deletePage(row.id)
+              }}
+              okText={t('Confirm')}
+              cancelText={t('Cancel')}
+            >
+              <Button size="small" type="primary" danger>{t('Delete')}</Button>
+            </Popconfirm>
+          </AuthFragment>
         </Space>
       ),
     },
@@ -149,26 +154,30 @@ const Pages: React.FC = () => {
 
   return (
     <>
-      <Button
-        type="primary"
-        size="small"
-        onClick={() => {
-          setEditingId(0)
-          form.resetFields()
-          setVisible(true)
-        }}
-      >
-        {t('Create')}
-      </Button>
-      <Table
-        style={{ marginTop: 10 }}
-        size="small"
-        rowKey="id"
-        columns={columns}
-        loading={listLoading}
-        dataSource={pageList}
-        pagination={pagination}
-      />
+      <AuthFragment authKey="add">
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => {
+            setEditingId(0)
+            form.resetFields()
+            setVisible(true)
+          }}
+        >
+          {t('Create')}
+        </Button>
+      </AuthFragment>
+      <AuthFragment authKey="view">
+        <Table
+          style={{ marginTop: 10 }}
+          size="small"
+          rowKey="id"
+          columns={columns}
+          loading={listLoading}
+          dataSource={pageList}
+          pagination={pagination}
+        />
+      </AuthFragment>
       <Modal
         title={editingId ? t('Edit page') : t('Create page')}
         visible={visible}

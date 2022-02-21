@@ -79,7 +79,7 @@ const Roles: React.FC = () => {
       dataIndex: 'operation',
       render: (text: string, record: Role) => (
         <Space size="middle">
-          {record.roleType !== 1 && (
+          <AuthFragment authKey="delete" otherConditions={record.roleType !== 1}>
             <Popconfirm
               title={t('Are you sure to delete')}
               onConfirm={() => {
@@ -92,20 +92,22 @@ const Roles: React.FC = () => {
                 {t('Delete')}
               </Button>
             </Popconfirm>
-          )}
+          </AuthFragment>
 
           {/* {record.roleType !== 1 && (
 
           )} */}
-          <Button
-            type="dashed"
-            size="small"
-            onClick={() => {
-              onClickEdit(record.id)
-            }}
-          >
-            {t('Edit')}
-          </Button>
+          <AuthFragment authKey="edit">
+            <Button
+              type="dashed"
+              size="small"
+              onClick={() => {
+                onClickEdit(record.id)
+              }}
+            >
+              {t('Edit')}
+            </Button>
+          </AuthFragment>
         </Space>
       ),
     },
@@ -117,7 +119,7 @@ const Roles: React.FC = () => {
 
   return (
     <div>
-      <div className="filter-container">
+      <AuthFragment authKey="add">
         <Button
           type="primary"
           size="small"
@@ -128,16 +130,17 @@ const Roles: React.FC = () => {
         >
           {t('Add role')}
         </Button>
-      </div>
-
-      <Table
-        loading={getLoading}
-        rowKey="id"
-        dataSource={roles}
-        columns={columns}
-        pagination={false}
-      >
-      </Table>
+      </AuthFragment>
+      <AuthFragment authKey="view">
+        <Table
+          loading={getLoading}
+          rowKey="id"
+          dataSource={roles}
+          columns={columns}
+          pagination={false}
+        >
+        </Table>
+      </AuthFragment>
       <RoleDetailDrawer
         visible={drawerVisible}
         id={selectedRoleId}
