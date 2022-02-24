@@ -27,12 +27,12 @@ npm i && npm start
 
 ### 启动项目
 
+启动之前一定先要配置/env/development.ts并在本地mysql创建好数据库（数据库名与配置文件一致），[配置项解读](/zh-cn/backend.md#配置项及说明)
+
 ``` bash
 git clone git@github.com:zhuhengtan/gorgeous-admin-server.git
 
 cd gorgeous-admin-server
-
-// 一定先要配置/env/development.ts并在本地mysql创建好数据库（数据库名与配置文件一致）
 
 npm i && npm run dev
 

@@ -4,6 +4,87 @@
 
 使用`koa2`作为项目基础框架，`typeorm`作为orm管理，正式环境使用`pm2`进行进程维护。
 
+## 配置项及说明
+
+``` ts
+ /**
+ * 生产环境配置文件
+ */
+export const config = {
+  // 系统信息，创建用户成功会用以下信息给用户发送邮件
+  systemInfo: {
+    name: 'gorgeous admin',
+    loginUrl: '',
+  },
+
+  // 签名用到的key，也可以用UUID避免被猜到
+  signKey: 'gorgeous-admin-server',
+  
+  // 环境名称
+  env: 'production', 
+
+  // 允许的协议
+  agreement: "http",
+
+  // 监听的端口，如有多个项目，需要使用不同的端口，切记！
+  port: "3000",
+  
+  // 数据库设置
+  database: {
+    type: "mysql",
+    host: "127.0.0.1",
+    port: 3306,
+    username: "",
+    password: "",
+    database: "",
+    synchronize: true,
+    entities: [
+      "dist/src/entity/*/*.js"
+    ],
+    cli: {
+      entitiesDir: "dist/src/entity"
+    },
+    timezone: "+8"
+  },
+
+  // 系统管理员邮箱
+  adminEmail: '',
+
+  // 发送邮件服务设置
+  email: {
+    service: '',
+    port: 0,
+    auth: {
+      // 发送方的邮箱
+      user: '',
+      // smtp 的授权码，是授权码，不是密码，在邮箱官网的设置里面获取 
+      pass: ''
+    },
+    // 发送方的展示名称
+    from: '',
+  },
+
+  // redis设置
+  redis: {
+    // redis端口
+    port: 0,
+    // Redis 服务器
+    host: '',
+    db: 0,
+    // 存诸的前缀
+    prefix: 'gorgeous-admin-server-code:',
+    // 过期时间
+    ttl: 60 * 5,
+  },
+
+  // 文件上传
+  // 静态资源放在服务器上的位置
+  staticPath: '',
+  // 拼接的静态资源url前缀
+  staticPrefix: '',
+};
+```
+
 ## 项目结构
 ```
 ├── LICENSE

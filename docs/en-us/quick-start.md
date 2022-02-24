@@ -14,12 +14,12 @@ npm i && npm start
 
 ## server / backend
 
+Make sure you have set configs in /env/development.ts, and create database in your local mysql first(The database's name should be the same to your config). Env config [introductions](/en-us/backend.md#env-configs-introduction)
+
 ``` bash
 git clone git@github.com:zhuhengtan/gorgeous-admin-server.git
 
 cd gorgeous-admin-server
-
-// Make sure you have set configs in /env/development.ts, and create database in your local mysql first(The database's name should be the same to your config).
 
 npm i && npm run dev
 
