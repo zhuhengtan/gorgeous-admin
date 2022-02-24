@@ -6,6 +6,7 @@
 
 ## 文档
 [中文文档](https://zhuhengtan.github.io/gorgeous-admin/#/zh-cn/)
+
 [documents for English](https://zhuhengtan.github.io/gorgeous-admin/#/)
 
 ## 前端运行
