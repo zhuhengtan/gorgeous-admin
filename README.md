@@ -4,12 +4,11 @@
 
 与[gorgeous-admin-server（node,koa）](https://github.com/zhuhengtan/gorgeous-admin-server)（[golang版本](https://github.com/CryBecase/gorgeous-admin-server-cli)）搭配使用体验更佳哦
 
-## 初始化
-**目前建议直接拉取此git代码然后修改项目名。**
+## 文档
+[中文文档](https://zhuhengtan.github.io/gorgeous-admin/#/zh-cn/)
+[documents for English](https://zhuhengtan.github.io/gorgeous-admin/#/)
 
->原框架是初做react管理端时搭的，代码规范、项目结构不太规范，近期完善了一下，所以[gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)工具暂时无法使用。
-
-## 运行
+## 前端运行
 
 进入根目录，输入下面命令即可启动项目
 
