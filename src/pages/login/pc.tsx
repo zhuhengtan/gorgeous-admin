@@ -66,13 +66,6 @@ const PCLogin: React.FC<Props> = (props: Props) => {
             >
               <Input placeholder={t('Please input pwd')} type="password" />
             </Form.Item>
-            <Form.Item name="is_inner" valuePropName="checked">
-              <Switch
-                checkedChildren={t('Inner admin')}
-                unCheckedChildren={t('Outer admin')}
-                defaultChecked
-              />
-            </Form.Item>
             <Form.Item>
               <Button
                 className="login-btn"
