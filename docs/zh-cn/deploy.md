@@ -248,4 +248,4 @@ server {
 
 `nginx -t`没问题后，重启nginx即可。
 
-上面的两个域名`demo-api.gorgeous.com`和`demo.gorgeous.com`需要DNS解析到这个ip。
+上面的两个域名`demo-api.gorgeous-admin.com`和`demo.gorgeous-admin.com`需要DNS解析到这个ip。
