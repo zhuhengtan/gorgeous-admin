@@ -192,6 +192,10 @@ npm run build
 
 ## nginx配置
 
+### 基本配置
+
+如果要https请直接看下面的https配置
+
 ```
 nginx -V
 ```
@@ -200,7 +204,7 @@ nginx -V
 下面以 `demo.gorgeous-admin.com` 域名举例
 
 ```
-//  /etc/nginx/conf.d/demo-api.gorgeous-admin.com.conf
+# /etc/nginx/conf.d/demo-api.gorgeous-admin.com.conf
 
 server {
   listen 80;
@@ -221,8 +225,9 @@ server {
 ```
 
 ```
-// /etc/nginx/conf.d/demo.gorgeous-admin.com.conf
+# /etc/nginx/conf.d/demo.gorgeous-admin.com.conf
 server {
+  listen 80;
   server_name demo.gorgeous-admin.com;
   root /data/frontends/gorgeous-admin-demo/build;
   index index.html;
@@ -249,3 +254,87 @@ server {
 `nginx -t`没问题后，重启nginx即可。
 
 上面的两个域名`demo-api.gorgeous-admin.com`和`demo.gorgeous-admin.com`需要DNS解析到这个ip。
+
+### https配置
+
+准备证书，一般申请一个一级域名的证书就可以了。
+
+放到服务器上（/etc/nginx/cert/）路径下。
+
+```
+# /etc/nginx/conf.d/demo.gorgeous-admin.com.conf
+
+server {
+  listen 443 ssl;
+  #填写绑定证书的域名
+  server_name demo.gorgeous-admin.com; 
+  #证书文件名称
+  ssl_certificate cert/demo.gorgeous-admin.com_bundle.crt; 
+  #私钥文件名称
+  ssl_certificate_key cert/demo.gorgeous-admin.com.key; 
+  ssl_session_timeout 5m;
+  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers on;
+
+  root /data/frontends/gorgeous-admin-demo/build;
+  index index.html;
+
+  access_log /var/www/log/demo.gorgeous-admin.access.log;
+  error_log  /var/www/log/demo.gorgeous-admin.error.log;
+    
+  location /api {
+    proxy_pass 'https://demo-api.gorgeous-admin.com';
+  }
+
+  location /statics/ {
+    alias /data/files/upload/demo.gorgeous-admin.com/;
+  }
+
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}
+server {
+  listen 80;
+  #填写绑定证书的域名
+  server_name demo.gorgeous-admin.com; 
+  #把http的域名请求转成https
+  rewrite ^(.*)$ https://$host$request_uri permanent; 
+}
+```
+
+```
+# /etc/nginx/conf.d/demo-api.gorgeous-admin.com.conf
+server {
+  listen 443 ssl;
+
+  #填写绑定证书的域名
+  server_name demo-api.gorgeous-admin.com; 
+  #证书文件名称
+  ssl_certificate cert/demo-api.gorgeous-admin.com_bundle.crt; 
+  #私钥文件名称
+  ssl_certificate_key cert/demo-api.gorgeous-admin.com.key; 
+  ssl_session_timeout 5m;
+  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers on;
+
+  access_log /var/www/log/demo-api.gorgeous-admin.access.log;
+  error_log  /var/www/log/demo-api.gorgeous-admin.error.log;
+
+  location / {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-NginX-Proxy true;
+    proxy_pass http://127.0.0.1:4000/; # 注意这个要跟你项目监听的端口一致
+    proxy_redirect off;
+  }
+}
+server {
+  listen 80;
+  server_name  demo-api.gorgeous-admin.com;
+  rewrite ^(.*)$ https://$host$request_uri permanent; 
+}
+```
