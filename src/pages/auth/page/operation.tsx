@@ -6,8 +6,8 @@ import {
 import api from '@/service'
 import { useRequest } from 'ahooks'
 import { useTranslation } from 'react-i18next'
-import { cloneDeep } from 'lodash'
 import { v4 } from 'uuid'
+import { cloneDeep } from 'lodash'
 import { Operation } from '../types'
 
 const {
@@ -47,19 +47,19 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
   })
 
   const onChangeValue = useCallback((id, key, val) => {
-    const tmp = cloneDeep(value || [])
-    tmp.some((item: Operation) => {
+    const tmp = cloneDeep(value || []);
+    (tmp as Operation[]).some((item: Operation) => {
       if (item.id === id) {
         (item as any)[key] = val
         return true
       }
       return false
     })
-    onChange!(tmp)
+    onChange!(tmp as Operation[])
   }, [value, onChange])
 
   const onClickDeleteTmpOperation = useCallback((id) => {
-    const tmp = cloneDeep(value || []).filter((row) => row.id !== id)
+    const tmp = (cloneDeep(value || []) as Operation[]).filter((row) => row.id !== id)
     onChange!(tmp)
   }, [value, onChange])
 

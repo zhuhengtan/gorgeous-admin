@@ -1,5 +1,5 @@
 import {
-  Table, Tag, Button, Space, Popconfirm, Form, Input, Modal,
+  Table, Tag, Button, Space, Popconfirm, Form, Input, Modal, Radio,
 } from 'antd'
 import React, {
   useCallback, useEffect, useMemo, useState,
@@ -11,6 +11,8 @@ import { showMessage } from '@/utils'
 import AuthFragment from '@/components/auth-fragment'
 import OperationEdit from './operation'
 import { Operation, Page } from '../types'
+import Field from './field'
+import RouteConfigure from './route-configure'
 
 const {
   getPageList: getPageListRequest,
@@ -25,6 +27,8 @@ const Pages: React.FC = () => {
   const [pageList, setPageList] = useState<Page[]>([])
   const [visible, setVisible] = useState<boolean>(false)
   const [editingId, setEditingId] = useState<number>(0)
+  const [pageType, setPageType] = useState<number>(0)
+  const [path, setPath] = useState<string>('')
   const [form] = Form.useForm()
 
   const {
@@ -85,7 +89,7 @@ const Pages: React.FC = () => {
 
   useEffect(() => {
     getPageList({ current: 1, pageSize: 10 })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const columns = useMemo(() => [
@@ -110,7 +114,7 @@ const Pages: React.FC = () => {
       title: t('Operation'),
       render: (text: string, row: Page) => (
         <Space>
-          <AuthFragment authKey="edit">
+          <AuthFragment authKey="update">
             <Button
               size="small"
               type="primary"
@@ -181,12 +185,13 @@ const Pages: React.FC = () => {
       <Modal
         title={editingId ? t('Edit page') : t('Create page')}
         visible={visible}
-        width={800}
+        maskClosable={false}
+        width={1200}
         onCancel={() => setVisible(false)}
         confirmLoading={updating || creating}
         onOk={onClickOk}
       >
-        <Form form={form}>
+        <Form form={form} initialValues={{ pageType: 0 }}>
           <Form.Item hidden name="id">
             <Input />
           </Form.Item>
@@ -194,12 +199,38 @@ const Pages: React.FC = () => {
             <Input placeholder={t('Please input page name')} />
           </Form.Item>
           <Form.Item label={t('Page path')} name="path">
-            <Input placeholder={t('Please input page path')} />
+            <Input placeholder={t('Please input page path')} onChange={(e) => setPath(e.currentTarget.value)} />
           </Form.Item>
-          <Form.Item label={t('Page operations')} name="operations">
-            <OperationEdit onDeleteOperation={onDeleteOperation} />
+          <Form.Item label={t('Page type')} name="pageType">
+            <Radio.Group onChange={(e) => setPageType(e.target.value)}>
+              <Radio value={0}>{t('Page type hand-writing')}</Radio>
+              <Radio value={1}>{t('Page type configure')}</Radio>
+              <Radio value={2}>{t('Page type generate')}</Radio>
+            </Radio.Group>
           </Form.Item>
+          {pageType === 0
+            && (
+              <Form.Item label={t('Page operations')} name="operations">
+                <OperationEdit onDeleteOperation={onDeleteOperation} />
+              </Form.Item>
+            )}
+          {(pageType === 1 || pageType === 2)
+            && (
+              <>
+                <Form.Item label={t('Page entity name')} name="entityName">
+                  <Input placeholder={t('Page entity placeholder')} />
+                </Form.Item>
+                <Form.Item label={t('Page fields')} name="fields">
+                  <Field />
+                </Form.Item>
+              </>
+            )}
         </Form>
+        {(pageType === 1 || pageType === 2) && path && (
+          <>
+            <RouteConfigure path={path} pageType={pageType} />
+          </>
+        )}
       </Modal>
     </>
   )

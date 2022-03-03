@@ -261,3 +261,9 @@ export const languageMap = {
     antd: koKR,
   },
 }
+
+export const deepClone = (obj: any) => new Promise((resolve) => {
+  const { port1, port2 } = new MessageChannel()
+  port2.onmessage = (v) => resolve(v.data)
+  port1.postMessage(obj)
+})

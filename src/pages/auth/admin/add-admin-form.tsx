@@ -14,7 +14,7 @@ import React, {
 import { useTranslation } from 'react-i18next'
 
 import api from '@/service'
-import { cloneDeep } from 'lodash'
+import { deepClone } from '@/utils'
 import { Role } from '../types'
 
 const {
@@ -70,8 +70,8 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
 
   const { run: getAdminDetail, loading: getLoading } = useRequest((id) => getAdminDetailRequest({ id }), {
     manual: true,
-    onSuccess(res) {
-      const formData: any = cloneDeep(res)
+    async onSuccess(res) {
+      const formData: any = await deepClone(res)
       formData.roleIds = formData.roles.map((role: Role) => (role.id))
       form.setFieldsValue(formData)
     },
