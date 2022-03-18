@@ -93,8 +93,9 @@
   "Page type hand-writing": "手写页面",
   "Page type configure": "配置页面",
   "Page type generate": "生成页面",
-  "Edit page": "编辑页面",
-  "Create page": "新建页面",
+  "Edit page": "编辑页面权限",
+  "Create page": "新增页面以及权限",
+  "View page": "页面详情",
   "Please input page name": "请输入页面标题",
   "Please input page path": "请输入页面路径",
   "Operation name": "权限名",
@@ -114,5 +115,9 @@
   "Configuration item type": "数据类型",
   "Configuration item editable": "可编辑",
   "Configuration item edit component": "编辑组件",
-  "Add field": "添加字段"
+  "Add field": "添加字段",
+  "Page hidden": "边栏隐藏",
+  "Page check auth": "检查权限",
+
+  "Generate server crud": "生成实体及接口"
 }

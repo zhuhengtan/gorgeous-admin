@@ -1,24 +1,12 @@
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  Input, Table, Button, Radio, Switch,
+  Input, Table, Button, Radio, Switch, Col,
 } from 'antd'
 import { CloseOutlined, DeleteOutlined } from '@ant-design/icons'
 import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
-
-interface FieldItem {
-  id: string
-  title: string
-  name: string
-  type: string
-  columnName: string
-  comment: string
-  columnType: string
-  columnDefaultValue: string | number | boolean
-  editable: boolean
-  editComponent: string
-}
+import { FieldItem } from '../types'
 
 interface Props {
   value?: FieldItem[]
@@ -154,7 +142,7 @@ const Fields: React.FC<Props> = (props: Props) => {
   }, [onChange, value])
 
   return (
-    <>
+    <Col>
       <Button
         size="small"
         type="primary"
@@ -166,12 +154,12 @@ const Fields: React.FC<Props> = (props: Props) => {
         rowKey="id"
         style={{ marginTop: 10 }}
         size="small"
-        scroll={{ y: 300 }}
+        scroll={{ y: 500 }}
         pagination={false}
         columns={columns}
         dataSource={value}
       />
-    </>
+    </Col>
   )
 }
 

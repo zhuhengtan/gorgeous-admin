@@ -33,6 +33,9 @@ const apiList: ApiList = {
   deleteOperation: 'DELETE /api/b/auth/operation',
   deletePage: 'DELETE /api/b/auth/page',
   getAllApis: 'GET /api/b/auth/all-apis',
+
+  // 生成后端crud代码
+  generateServerCrud: 'POST /api/b/auth/generate-server-crud',
 }
 
 export default apiList

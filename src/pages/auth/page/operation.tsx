@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { CloseOutlined, DeleteOutlined } from '@ant-design/icons'
 import {
-  Table, Input, Select, Button, Space, Row,
+  Table, Input, Select, Button, Space, Row, Col,
 } from 'antd'
 import api from '@/service'
 import { useRequest } from 'ahooks'
@@ -131,7 +131,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
   }, [])
 
   return (
-    <>
+    <Col>
       <Button
         size="small"
         type="primary"
@@ -148,7 +148,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
         columns={columns}
         dataSource={value}
       />
-    </>
+    </Col>
   )
 }
 

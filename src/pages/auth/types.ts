@@ -6,12 +6,26 @@ export interface Operation {
   createdAt?: string
 }
 
+export interface FieldItem {
+  id: string
+  title: string
+  name: string
+  type: string
+  columnName: string
+  comment: string
+  columnType: string
+  columnDefaultValue: string | number | boolean
+  editable: boolean
+  editComponent: string
+}
+
 export interface Page {
   id: number
   name: string
   path: string
   createdAt: string
   operations: Operation[]
+  content: FieldItem[] | null
 }
 
 export interface Role {

@@ -12,6 +12,7 @@ import Pages from '@/pages/auth/page'
 import Login from '@/pages/login'
 import NotFound from '@/pages/not-found'
 import AdminInfo from '@/pages/admin-info'
+import GenerateServerCrud from '@/pages/auth/generate-server-crud'
 
 const routes: RouteConfig[] = [
   {
@@ -57,6 +58,12 @@ const routes: RouteConfig[] = [
             name: 'Admin list',
             checkAuth: true,
             component: Admins,
+          },
+          {
+            path: '/auth/generate-server-crud',
+            name: 'Generate server crud',
+            checkAuth: true,
+            component: GenerateServerCrud,
           },
         ],
       },
