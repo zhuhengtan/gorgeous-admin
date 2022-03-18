@@ -18,6 +18,9 @@ const GenerateServerCRUD: React.FC = () => {
     run: generateServerCrud,
   } = useRequest((data) => generateServerCrudRequest(data), {
     manual: true,
+    onSuccess() {
+      form.resetFields()
+    },
   })
 
   const schema = useMemo<FRProps['schema']>(() => ({
