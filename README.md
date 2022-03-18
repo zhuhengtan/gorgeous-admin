@@ -33,8 +33,6 @@ npm start
 
 ✅ [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server)接口对接
 
-👨🏻‍💻 本地生成代码
-
-👨🏻‍💻 线上生成代码（服务端自动重启）
+✅ 生成服务端增删改查代码
 
 👨🏻‍💻 [gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)

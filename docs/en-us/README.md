@@ -20,6 +20,7 @@ see docs [here](/en-us/quick-start.md).
 - [x] env conf
 - [x] auth management
 - [x] [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server) api
+- [x] generate entity and CRUD code
 - [ ] online demo
 - [ ] page template, quick generate page
 - [ ] [gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)

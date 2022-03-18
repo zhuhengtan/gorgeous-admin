@@ -20,6 +20,7 @@
 - [x] 环境配置
 - [x] 权限管理
 - [x] [gorgeous-admin-server](https://github.com/zhuhengtan/gorgeous-admin-server) 接口对接
+- [x] 生成实体和对应CRUD代码
 - [ ] 在线demo
 - [ ] 页面模板，快速生成页面
 - [ ] [gorgeous-admin-cli](https://github.com/zhuhengtan/gorgeous-admin-cli)
