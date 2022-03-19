@@ -134,11 +134,9 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           name: e.name,
           description: e.description,
         })
-        const roleOperationIds = e.operations.map((operation: Operation) => operation.id)
+        const roleOperationIds = e.operations.map((operation: Operation) => `operation_${operation.id}`)
         setCheckedKeys(roleOperationIds)
-        setSelecetedOperationIds(
-          roleOperationIds.filter((item: any) => typeof item === 'number'),
-        )
+        setSelecetedOperationIds(e.operations.map((operation: Operation) => operation.id))
       },
     },
   )
@@ -148,7 +146,14 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
     {
       manual: true,
       onSuccess(e: any) {
-        setOperationList(e)
+        setOperationList(e.map((page: { id: number, name: string, operations: { id: number, name: string }[] }) => ({
+          id: `page_${page.id}`,
+          name: page.name,
+          operations: page.operations.map((operation: { id: number, name: string }) => ({
+            id: `operation_${operation.id}`,
+            name: operation.name,
+          })),
+        })))
         setSelecetedOperationIds([])
         form.setFieldsValue({
           name: '',
@@ -211,7 +216,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
       const tmp: number[] = []
       info.checkedNodes.forEach((item: any) => {
         if (item.id) {
-          tmp.push(item.id)
+          tmp.push(item.id.split('_')[1])
         }
       })
       setSelecetedOperationIds(tmp)
@@ -272,14 +277,14 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
           <Tabs.TabPane tab={t('Basic permission')} key="1">
             {((role && role.auth && role.auth.length > 0)
               || operationList.length > 0) && (
-              <Tree
-                checkable
-                fieldNames={{ title: 'name', key: 'id', children: 'operations' }}
-                onCheck={onCheck}
-                defaultExpandAll
-                checkedKeys={checkedKeys}
-                treeData={(role && (role.auth as any)) || operationList}
-              />
+                <Tree
+                  checkable
+                  fieldNames={{ title: 'name', key: 'id', children: 'operations' }}
+                  onCheck={onCheck}
+                  defaultExpandAll
+                  checkedKeys={checkedKeys}
+                  treeData={(role && (role.auth as any)) || operationList}
+                />
             )}
           </Tabs.TabPane>
         </Tabs>
