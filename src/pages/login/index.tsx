@@ -25,7 +25,7 @@ function Login() {
   const [, setAdminInfo] = useLocalStorageState('USER_INFO', {})
 
   const loginSuccess = useCallback(
-    (loginRes) => {
+    (loginRes: any) => {
       setCookie('token', loginRes.token)
       setToken(loginRes.token)
       setAdminInfo(loginRes.admin)
@@ -49,7 +49,7 @@ function Login() {
   )
 
   const keyDownHandle = useCallback(
-    async (e) => {
+    async (e: any) => {
       const data = form.getFieldsValue()
       if (e.keyCode === 13) {
         // 按下回车键

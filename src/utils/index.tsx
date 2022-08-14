@@ -3,7 +3,7 @@ import enUS from 'antd/es/locale/en_US'
 import koKR from 'antd/es/locale/ko_KR'
 import zhCN from 'antd/es/locale/zh_CN'
 import { AxiosError } from 'axios'
-import i18n from 'i18next'
+import i18n, { TFunctionResult } from 'i18next'
 import _get from 'lodash/get'
 import React from 'react'
 import { JsonObject } from '@/type'
@@ -120,7 +120,7 @@ export const formMoney = (
 }
 
 interface ChangeMessageProps {
-  message: string | React.ReactNode
+  message: string | React.ReactNode | TFunctionResult
 }
 
 /**
@@ -144,14 +144,14 @@ export function ChangeMessage(props: ChangeMessageProps) {
           <span>
             {`${propMessage} `}
             <a onClick={() => setShowAll(false)} title={i18n.t('Collapse')}>
-              {i18n.t('Collapse')}
+              {String(i18n.t('Collapse'))}
             </a>
           </span>
         ) : (
           <span>
             {`${propMessage.slice(0, 70)}... `}
             <a onClick={() => setShowAll(true)} title={i18n.t('Show all')}>
-              {i18n.t('Show all')}
+              {String(i18n.t('Show all'))}
             </a>
           </span>
         )
@@ -166,7 +166,7 @@ export function ChangeMessage(props: ChangeMessageProps) {
 
 export function defaultGetErrorMsg(
   error: AxiosError,
-): string | React.ReactNode {
+): string | React.ReactNode | TFunctionResult {
   const err: any = error
   let detail = false
   if (err.stackTrace) {
@@ -180,7 +180,7 @@ export function defaultGetErrorMsg(
     || _get(error, 'response.data.message', '')
   const msg = _get(error, 'message')
   const status = _get(error, 'response.status')
-  let errMsg: string | React.ReactNode = ''
+  let errMsg: string | React.ReactNode | TFunctionResult = ''
   if (status === 401) {
     errMsg = i18n.t('Token expired')
   } else if (status === 403) {
@@ -198,10 +198,12 @@ export function defaultGetErrorMsg(
   if (detail) {
     errMsg = (
       <span>
-        {errMsg}，
-        <span style={{ cursor: 'pointer', textDecoration: 'underline' }}>
-          {i18n.t('Show detail')}
-        </span>
+        <>
+          {errMsg}
+          <span style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+            {String(i18n.t('Show detail'))}
+          </span>
+        </>
       </span>
     )
   }
@@ -209,7 +211,7 @@ export function defaultGetErrorMsg(
 }
 
 export function showError(
-  s: string | React.ReactNode,
+  s: string | React.ReactNode | TFunctionResult,
   duration = 4,
   toBottom = 70,
 ) {

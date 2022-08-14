@@ -41,7 +41,7 @@ const CustomAvatar: FC = () => {
   )
   return (
     <div>
-      <Dropdown overlay={menu} placement="bottomCenter">
+      <Dropdown overlay={menu} placement="bottom">
         {adminInfo && (adminInfo as AdminInfo).avatar ? (
           <Avatar size="default" src={(adminInfo as AdminInfo).avatar} />
         ) : (

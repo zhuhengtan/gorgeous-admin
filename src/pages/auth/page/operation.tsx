@@ -46,7 +46,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     },
   })
 
-  const onChangeValue = useCallback((id, key, val) => {
+  const onChangeValue = useCallback((id: number | string, key: string, val: any) => {
     const tmp = cloneDeep(value || []);
     (tmp as Operation[]).some((item: Operation) => {
       if (item.id === id) {
@@ -58,12 +58,12 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     onChange!(tmp as Operation[])
   }, [value, onChange])
 
-  const onClickDeleteTmpOperation = useCallback((id) => {
+  const onClickDeleteTmpOperation = useCallback((id: number | string) => {
     const tmp = (cloneDeep(value || []) as Operation[]).filter((row) => row.id !== id)
     onChange!(tmp)
   }, [value, onChange])
 
-  const onClickDeleteOperation = useCallback((id) => {
+  const onClickDeleteOperation = useCallback((id: number | string) => {
     deleteOperation(id)
   }, [deleteOperation])
 
@@ -72,14 +72,14 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       title: t('Operation name'),
       dataIndex: 'name',
       render: (text: string, row: Operation) => (
-        <Input bordered={false} size="small" value={row.name} onChange={(e) => onChangeValue(row.id, 'name', e.currentTarget.value)} />
+        <Input bordered={false} size="small" value={row.name} onChange={(e) => onChangeValue(row.id!, 'name', e.currentTarget.value)} />
       ),
     },
     {
       title: t('Operation key'),
       dataIndex: 'key',
       render: (text: string, row: Operation) => (
-        <Input bordered={false} size="small" value={row.key} onChange={(e) => onChangeValue(row.id, 'key', e.currentTarget.value)} />
+        <Input bordered={false} size="small" value={row.key} onChange={(e) => onChangeValue(row.id!, 'key', e.currentTarget.value)} />
       ),
     },
     {
@@ -94,7 +94,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
           showSearch
           value={row.relatedApi}
           loading={loading}
-          onChange={(e) => onChangeValue(row.id, 'relatedApi', e)}
+          onChange={(e) => onChangeValue(row.id!, 'relatedApi', e)}
         >
           {apiList && apiList.map((api) => (
             <Select.Option key={api} value={api}>{api}</Select.Option>
@@ -107,9 +107,9 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       dataIndex: 'id',
       render: (text: string, row: Operation) => (
         (row.id?.toString() as string).indexOf('tmp') >= 0 ? (
-          <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => onClickDeleteTmpOperation(row.id)}></Button>
+          <Button size="small" type="text" icon={<CloseOutlined />} onClick={() => onClickDeleteTmpOperation(row.id!)}></Button>
         ) : (
-          <Button size="small" type="text" icon={<DeleteOutlined />} onClick={() => onClickDeleteOperation(row.id)}></Button>
+          <Button size="small" type="text" icon={<DeleteOutlined />} onClick={() => onClickDeleteOperation(row.id!)}></Button>
         )
       ),
     },

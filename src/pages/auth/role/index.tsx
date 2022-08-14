@@ -44,7 +44,7 @@ const Roles: React.FC = () => {
   })
 
   // 获取角色权限信息
-  const onClickEdit = useCallback((id) => {
+  const onClickEdit = useCallback((id: number) => {
     setDrawerVisible(true)
     setSelectedRoleId(id)
   }, [])

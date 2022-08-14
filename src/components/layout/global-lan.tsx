@@ -31,7 +31,7 @@ const GlobalLan: FC = () => {
     </Menu>
   )
   return (
-    <Dropdown overlay={menu} placement="bottomCenter">
+    <Dropdown overlay={menu} placement="bottom">
       <div className="language-selecter">
         <GlobalOutlined
           style={{ color: 'black', fontSize: 18, display: 'block' }}

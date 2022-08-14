@@ -187,7 +187,7 @@ const Pages: React.FC = () => {
     getPageDetail({ path: editingRoute?.path })
   }, [editingRoute, getPageDetail])
 
-  const onDrop = useCallback((info) => {
+  const onDrop = useCallback((info: any) => {
     const dropId = info.node.id
     const dragId = info.dragNode.id
     const dropPos = info.node.pos.split('-')
@@ -303,7 +303,7 @@ const Pages: React.FC = () => {
     },
   }), [t, onDeleteOperation])
 
-  const onClickTreeNode = useCallback((selectedKeys, e) => {
+  const onClickTreeNode = useCallback((selectedKeys: (string | number)[], e: any) => {
     const route: any = e.selectedNodes[0]
     setSelectedLocalRoute(route)
     if (route.checkAuth) { // 如果有checkAuth，看后台有没有存此页信息，没有则为新增

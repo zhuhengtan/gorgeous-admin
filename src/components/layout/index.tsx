@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom'
 
 import api from '@/service'
 import { AdminAuthContext } from '@/context/AdminAuthContext'
+import { AdminInfo } from '@/type'
 
 import Avatar from './avatar'
 import GlobalLan from './global-lan'
@@ -111,9 +112,9 @@ const CustomLayout = (props: RouteConfig) => {
   }, [collapsed])
 
   const goToPage = useCallback(
-    (menu) => {
+    (menu: RouteConfig) => {
       // const path = menu.path.toLocaleString();
-      history.push(menu.path)
+      history.push(menu.path as any)
     },
     [history],
   )
@@ -146,7 +147,7 @@ const CustomLayout = (props: RouteConfig) => {
       })
   }
 
-  const { run: getAdminAuth } = useRequest(() => getAdminAuthRequest({ id: admin.id }), {
+  const { run: getAdminAuth } = useRequest(() => getAdminAuthRequest({ id: (admin as AdminInfo).id }), {
     manual: true,
     onSuccess(e: any) {
       setAdminAuth(e.auth)
@@ -191,7 +192,7 @@ const CustomLayout = (props: RouteConfig) => {
   )
 
   return (
-    <AdminAuthContext.Provider value={finalAuth}>
+    <AdminAuthContext.Provider value={finalAuth as any}>
       <Layout className="layout-container">
         <Sider
           width={200}

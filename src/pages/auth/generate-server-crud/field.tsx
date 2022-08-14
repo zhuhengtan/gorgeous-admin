@@ -29,12 +29,12 @@ const Fields: React.FC<Props> = (props: Props) => {
     onChange!(tmp)
   }, [value, onChange])
 
-  const onClickDeleteTmpField = useCallback((id) => {
+  const onClickDeleteTmpField = useCallback((id: number|string) => {
     const tmp = (cloneDeep(value || []) as FieldItem[]).filter((row) => row.id !== id)
     onChange!(tmp)
   }, [value, onChange])
 
-  const onClickDeleteField = useCallback((id) => {}, [])
+  const onClickDeleteField = useCallback((id: number|string) => {}, [])
 
   const columns = useMemo(() => {
     const config = [
