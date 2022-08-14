@@ -81,8 +81,10 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "javascript-obfuscator": "^4.0.0",
     "nunjucks": "^3.2.3",
     "postcss": "^8.4.16",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "webpack-obfuscator": "^3.5.1"
   }
 }

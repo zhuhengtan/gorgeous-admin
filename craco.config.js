@@ -16,6 +16,18 @@ module.exports = {
       '@': pathResolve('src'),
       // 此处是一个示例，实际可根据各自需求配置
     },
+    plugins: [
+      ()=>{
+        if(process.env.REACT_APP_ENV === 'development') {
+          console.log('开发环境，无需代码混淆')
+          return null
+        }
+        const WebpackObfuscator = require('webpack-obfuscator')
+        return new WebpackObfuscator ({
+          rotateStringArray: true
+        }, [])
+      }
+    ]
   },
   babel: {
     plugins: [
