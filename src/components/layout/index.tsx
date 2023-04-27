@@ -8,9 +8,12 @@ import { useLocalStorageState, useRequest } from 'ahooks'
 import {
   Breadcrumb,
   Layout, Menu,
+  MenuProps,
   Space,
 } from 'antd'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { matchPath, useHistory } from 'react-router'
 import { renderRoutes, RouteConfig } from 'react-router-config'
@@ -40,7 +43,7 @@ const CustomLayout = (props: RouteConfig) => {
   const history = useHistory()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
-  const [adminAuth, setAdminAuth] = useState([])
+  const [adminAuth, setAdminAuth] = useState({})
   const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
   const [admin] = useLocalStorageState('USER_INFO')
 
@@ -127,14 +130,14 @@ const CustomLayout = (props: RouteConfig) => {
         const routes = (item.routes || []).filter((item2) => !item2.hidden)
         if (routes.length) {
           return (
-            <SubMenu key={path?.toLocaleString()} icon={icon} title={t(name)}>
+            <SubMenu key={path as string} icon={icon} title={t(name)}>
               {renderMenuItem(routes)}
             </SubMenu>
           )
         }
         return (
           <Menu.Item
-            key={path?.toLocaleString()}
+            key={path as string}
             onClick={() => {
               goToPage(item)
             }}
@@ -161,35 +164,87 @@ const CustomLayout = (props: RouteConfig) => {
     }
   }, [getAdminAuth, token])
 
-  const filterRoutersByPermission = useCallback(
-    (routers: RouteConfig[]) => {
-      const arr: RouteConfig[] = []
-      routers.some((router) => {
-        const obj = { ...router }
-        if (
-          obj.checkAuth
-          && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
-        ) {
-          arr.push(obj)
+  // const filterRoutersByPermission = useCallback(
+  //   (routers: RouteConfig[]) => {
+  //     const arr: RouteConfig[] = []
+  //     routers.some((router) => {
+  //       const obj = { ...router }
+  //       if (
+  //         obj.checkAuth
+  //         && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
+  //       ) {
+  //         arr.push(obj)
+  //       }
+  //       if (obj.routes && obj.routes.length) {
+  //         const newRouters = filterRoutersByPermission(obj.routes)
+  //         if (newRouters.length) {
+  //           obj.routes = newRouters
+  //           arr.push(obj)
+  //           return true
+  //         }
+  //         return true
+  //       }
+  //       if (!obj.checkAuth) {
+  //         arr.push(obj)
+  //       }
+  //       return false
+  //     })
+  //     return arr
+  //   },
+  //   [adminAuth],
+  // )
+
+  const routeItemsWithPermission = useMemo(() => {
+    const filterRoutersByPermission = (routers: RouteConfig[]): MenuProps['items'] => {
+      const arr: MenuProps['items'] = []
+      for (let i = 0; i < routers.length; i++) {
+        const obj = { ...routers[i] }
+        if (obj.hidden) {
+          continue
+        }
+        if (obj.checkAuth) {
+          if (Object.hasOwn(adminAuth, obj.path as string)) {
+            arr.push({
+              key: obj.path as string,
+              icon: obj.icon,
+              title: obj.name,
+              label: obj.name,
+              onClick: () => {
+                goToPage(obj)
+              },
+            })
+            continue
+          }
+          continue
         }
         if (obj.routes && obj.routes.length) {
           const newRouters = filterRoutersByPermission(obj.routes)
-          if (newRouters.length) {
-            obj.routes = newRouters
-            arr.push(obj)
-            return true
+          if (newRouters && newRouters.length) {
+            arr.push({
+              key: obj.path as string,
+              icon: obj.icon,
+              title: obj.name,
+              label: obj.name,
+              children: newRouters,
+            })
+            continue
           }
-          return true
+          continue
         }
-        if (!obj.checkAuth) {
-          arr.push(obj)
-        }
-        return false
-      })
+        arr.push({
+          key: obj.path as string,
+          icon: obj.icon,
+          title: obj.name,
+          label: obj.name,
+          onClick: () => {
+            goToPage(obj)
+          },
+        })
+      }
       return arr
-    },
-    [adminAuth],
-  )
+    }
+    return filterRoutersByPermission(route.routes)
+  }, [goToPage, route, adminAuth])
 
   return (
     <AdminAuthContext.Provider value={finalAuth as any}>
@@ -207,9 +262,8 @@ const CustomLayout = (props: RouteConfig) => {
             defaultSelectedKeys={defaultSelectedKeys}
             defaultOpenKeys={defaultOpenKeys}
             selectedKeys={defaultSelectedKeys}
-          >
-            {renderMenuItem(filterRoutersByPermission(route.routes))}
-          </Menu>
+            items={routeItemsWithPermission}
+          />
         </Sider>
         <Layout className="right-container">
           <Header className="header">

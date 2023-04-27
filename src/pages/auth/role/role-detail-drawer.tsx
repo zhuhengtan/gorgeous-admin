@@ -238,7 +238,7 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
   return (
     <Drawer
       title={id ? t('Edit role') : t('Add role')}
-      visible={visible}
+      open={visible}
       placement="right"
       width={600}
       onClose={() => setVisible(false)}

@@ -40,6 +40,7 @@ axiosInstance.interceptors.response.use(
   (response) => {
     const res = response.data
     if (res.code === 401) {
+      showError(res.message)
       window.location.assign('/login')
     } else if (res.code !== 200) {
       if (res.code === 10404) {

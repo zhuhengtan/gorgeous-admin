@@ -347,7 +347,7 @@ const Pages: React.FC = () => {
         )}
       <Drawer
         title={currentOperation.title}
-        visible={drawerVisible}
+        open={drawerVisible}
         width={800}
         onClose={() => setDrawerVisible(false)}
         extra={(

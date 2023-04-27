@@ -1,7 +1,9 @@
 import { GlobalOutlined } from '@ant-design/icons'
 import { useLocalStorageState } from 'ahooks'
-import { Dropdown, Menu } from 'antd'
-import React, { FC, useCallback } from 'react'
+import {
+  Dropdown, MenuProps,
+} from 'antd'
+import React, { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { languageMap } from '@/utils'
@@ -19,19 +21,16 @@ const GlobalLan: FC = () => {
     [i18n, setLanguage],
   )
 
-  const menu = (
-    <Menu>
-      {Object.keys(languageMap).map((key) => (
-        <Menu.Item key={key}>
-          <a onClick={() => changeHandle(key)}>
-            {(languageMap as any)[key].name}
-          </a>
-        </Menu.Item>
-      ))}
-    </Menu>
-  )
+  const languageMenuItems = useMemo<MenuProps['items']>(() => Object.keys(languageMap).map((key) => (
+    {
+      label: (languageMap as any)[key].name,
+      key,
+      onClick: () => changeHandle(key),
+    }
+  )), [changeHandle])
+
   return (
-    <Dropdown overlay={menu} placement="bottom">
+    <Dropdown menu={{ items: languageMenuItems }} placement="bottom">
       <div className="language-selecter">
         <GlobalOutlined
           style={{ color: 'black', fontSize: 18, display: 'block' }}

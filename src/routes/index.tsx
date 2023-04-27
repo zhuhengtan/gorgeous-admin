@@ -13,6 +13,7 @@ import Login from '@/pages/login'
 import NotFound from '@/pages/not-found'
 import AdminInfo from '@/pages/admin-info'
 import GenerateServerCrud from '@/pages/auth/generate-server-crud'
+import { t } from 'i18next'
 
 const routes: RouteConfig[] = [
   {
@@ -37,31 +38,31 @@ const routes: RouteConfig[] = [
       },
       {
         path: '/auth',
-        name: 'Auth management',
+        name: t('Auth management'),
         icon: <SecurityScanOutlined />,
         component: SecondLayout,
         routes: [
           {
             path: '/auth/page',
-            name: 'Page list',
+            name: t('Page list'),
             checkAuth: true,
             component: Pages,
           },
           {
             path: '/auth/role',
-            name: 'Role list',
+            name: t('Role list'),
             checkAuth: true,
             component: Roles,
           },
           {
             path: '/auth/admin',
-            name: 'Admin list',
+            name: t('Admin list'),
             checkAuth: true,
             component: Admins,
           },
           {
             path: '/auth/generate-server-crud',
-            name: 'Generate server crud',
+            name: t('Generate server crud'),
             checkAuth: true,
             component: GenerateServerCrud,
           },
