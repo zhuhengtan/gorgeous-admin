@@ -27,13 +27,13 @@ const {
 interface Props {
   id: number
   visible: boolean
-  setVisible: Dispatch<SetStateAction<boolean>>
+  onCancel: () => void
   onSuccess?: () => void
 }
 
 const AddAdminForm: React.FC<Props> = (props: Props) => {
   const {
-    id, visible, setVisible, onSuccess,
+    id, visible, onCancel, onSuccess,
   } = props
   const { t } = useTranslation()
 
@@ -49,7 +49,7 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
         if (onSuccess) {
           onSuccess()
         }
-        setVisible(false)
+        onCancel()
       },
     },
   )
@@ -63,7 +63,7 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
         if (onSuccess) {
           onSuccess()
         }
-        setVisible(false)
+        onCancel()
       },
     },
   )
@@ -88,8 +88,8 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
   )
 
   const handleCancel = useCallback(() => {
-    setVisible(false)
-  }, [setVisible])
+    onCancel()
+  }, [onCancel])
 
   const onClickConfirm = useCallback(async () => {
     await form.validateFields()
@@ -105,12 +105,14 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
     if (id) {
       getAdminDetail(id)
       getAllRoles()
+    } else {
+      form.resetFields()
     }
-  }, [getAllRoles, getAdminDetail, id])
+  }, [getAllRoles, getAdminDetail, id, form])
 
   return (
     <Modal
-      title={t('Add admin')}
+      title={id ? t('Edit admin') : t('Add admin')}
       visible={visible}
       onCancel={handleCancel}
       onOk={onClickConfirm}

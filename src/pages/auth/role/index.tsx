@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import AuthFragment from '@/components/auth-fragment'
 import api from '@/service'
 
+import { showMessage } from '@/utils'
 import RoleDetailDrawer from './role-detail-drawer'
 
 const { getRoles: getRolesRequest, deleteRole: deleteRoleRequest } = api
@@ -119,7 +120,7 @@ const Roles: React.FC = () => {
 
   return (
     <div>
-      <AuthFragment authKey="add">
+      <AuthFragment authKey="create">
         <Button
           type="primary"
           size="small"
@@ -145,10 +146,13 @@ const Roles: React.FC = () => {
         visible={drawerVisible}
         id={selectedRoleId}
         setVisible={setDrawerVisible}
-        onSuccess={() => getRoles({
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-        })}
+        onSuccess={() => {
+          setDrawerVisible(false)
+          getRoles({
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+          })
+        }}
       />
     </div>
   )

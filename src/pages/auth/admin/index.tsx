@@ -193,7 +193,7 @@ const Admins: React.FC = () => {
             }}
           />
         </div>
-        <AuthFragment authKey="add">
+        <AuthFragment authKey="create">
           <Button
             type="primary"
             onClick={() => {
@@ -216,7 +216,10 @@ const Admins: React.FC = () => {
       <AddAdminForm
         id={selectedAdminId}
         visible={addPanelVisible}
-        setVisible={setAddPanelVisible}
+        onCancel={() => {
+          setSelectedAdminId(0)
+          setAddPanelVisible(false)
+        }}
         onSuccess={() => {
           setSelectedAdminId(0)
           getAdmins({ ...pagination }, filter)
