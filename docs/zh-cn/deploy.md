@@ -147,8 +147,9 @@ CREATE DATABASE IF NOT EXISTS gorgeous_admin_server_demo DEFAULT CHARACTER SET u
 
 ```
 use gorgeous_admin_server_demo;
-
+SET FOREIGN_KEY_CHECKS=0;
 source /path/to/your/code/src/entity/init-data.sql;
+SET FOREIGN_KEY_CHECKS=1;
 ```
 可以看到执行结果，`show tables;`可以查看表的列表。
 
