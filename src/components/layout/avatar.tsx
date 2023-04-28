@@ -2,12 +2,12 @@ import { useLocalStorageState } from 'ahooks'
 import { Avatar, Dropdown, Menu } from 'antd'
 import React, { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { AdminInfo } from '@/type'
 
 const CustomAvatar: FC = () => {
   const { t } = useTranslation()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [, setToken] = useLocalStorageState<string>('TOKEN', {
     defaultValue: '',
@@ -20,14 +20,14 @@ const CustomAvatar: FC = () => {
   )
 
   const goToAdminInfo = useCallback(() => {
-    history.push('/admin-info')
-  }, [history])
+    navigate('/admin-info')
+  }, [navigate])
 
   const logOut = useCallback(() => {
     setToken('')
     setAdminInfo('')
-    history.push('/login')
-  }, [history, setToken, setAdminInfo])
+    navigate('/login')
+  }, [navigate, setToken, setAdminInfo])
 
   const menuItems = useMemo(() => ([
     {

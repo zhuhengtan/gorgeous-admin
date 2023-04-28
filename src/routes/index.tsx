@@ -1,10 +1,8 @@
 import React from 'react'
 import { SecurityScanOutlined } from '@ant-design/icons'
-import { Redirect } from 'react-router'
-import { RouteConfig } from 'react-router-config'
 
 import Layout from '@/components/layout'
-import SecondLayout from '@/components/layout/second-layout'
+// import SecondLayout from '@/components/layout/second-layout'
 import AccessDeny from '@/pages/access-deny'
 import Roles from '@/pages/auth/role'
 import Admins from '@/pages/auth/admin'
@@ -14,72 +12,75 @@ import NotFound from '@/pages/not-found'
 import AdminInfo from '@/pages/admin-info'
 import GenerateServerCrud from '@/pages/auth/generate-server-crud'
 import { t } from 'i18next'
+import { Navigate, RouteObject } from 'react-router'
 
-const routes: RouteConfig[] = [
+const routes: RouteObject[] = [
   {
     path: '/login',
-    component: Login,
+    element: <Login />,
   },
   {
     path: '/',
-    component: Layout,
-    routes: [
+    element: <Layout />,
+    children: [
       {
         path: '/',
-        exact: true,
-        hidden: true,
-        render: () => <Redirect to="/admin-info" />,
+        // hidden: true,
+        element: <Navigate to="/admin-info" />,
       },
       {
+        index: true,
         path: '/admin-info',
-        exact: true,
-        hidden: true,
-        component: AdminInfo,
+        // hidden: true,
+        element: <AdminInfo />,
       },
       {
         path: '/auth',
-        name: t('Auth management'),
-        icon: <SecurityScanOutlined />,
-        component: SecondLayout,
-        routes: [
+        // name: t('Auth management'),
+        // icon: <SecurityScanOutlined />,
+        // element: <SecondLayout />,
+        children: [
           {
             path: '/auth/page',
-            name: t('Page list'),
-            checkAuth: true,
-            component: Pages,
+            // name: t('Page list'),
+            // checkAuth: true,
+            element: <Pages />,
           },
           {
             path: '/auth/role',
-            name: t('Role list'),
-            checkAuth: true,
-            component: Roles,
+            // name: t('Role list'),
+            // checkAuth: true,
+            element: <Roles />,
           },
           {
             path: '/auth/admin',
-            name: t('Admin list'),
-            checkAuth: true,
-            component: Admins,
+            // name: t('Admin list'),
+            // checkAuth: true,
+            element: <Admins />,
           },
           {
             path: '/auth/generate-server-crud',
-            name: t('Generate server crud'),
-            checkAuth: true,
-            component: GenerateServerCrud,
+            // name: t('Generate server crud'),
+            // checkAuth: true,
+            element: <GenerateServerCrud />,
           },
         ],
       },
       {
         path: '/access-deny',
-        exact: true,
-        hidden: true,
-        component: AccessDeny,
+        // hidden: true,
+        element: <AccessDeny />,
       },
     ],
   },
   {
     path: '/404',
-    component: NotFound,
+    element: <NotFound />,
   },
+  // {
+  //   path: '*',
+  //   element: () => <Redirect to="/404" />,
+  // },
 ]
 
 export default routes

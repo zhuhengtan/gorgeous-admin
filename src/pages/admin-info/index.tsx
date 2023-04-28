@@ -7,7 +7,7 @@ import {
 } from 'antd'
 import React, { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { getCookie } from '@/utils/cookie'
 import api from '@/service'
@@ -22,7 +22,7 @@ const {
 
 const AdminInfoComponent: React.FC = () => {
   const { t } = useTranslation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [, setToken] = useLocalStorageState<string>('TOKEN', {
     defaultValue: '',
   })
@@ -65,7 +65,7 @@ const AdminInfoComponent: React.FC = () => {
           avatar: '',
           status: 0,
         })
-        history.push('/login')
+        navigate('/login')
       },
     },
   )

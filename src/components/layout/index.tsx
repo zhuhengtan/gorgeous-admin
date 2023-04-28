@@ -15,9 +15,8 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { matchPath, useHistory } from 'react-router'
-import { renderRoutes, RouteConfig } from 'react-router-config'
-import { Link } from 'react-router-dom'
+import { matchPath, RouteObject, useNavigate } from 'react-router'
+import { Outlet, Link } from 'react-router-dom'
 
 import api from '@/service'
 import { AdminAuthContext } from '@/context/AdminAuthContext'
@@ -38,9 +37,9 @@ interface BreadcrumbItem {
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
-const CustomLayout = (props: RouteConfig) => {
-  const { route, location } = props
-  const history = useHistory()
+const CustomLayout = () => {
+  const { route, location } = useGetRoute()
+  const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
   const [adminAuth, setAdminAuth] = useState({})
@@ -53,9 +52,9 @@ const CustomLayout = (props: RouteConfig) => {
   })
   useEffect(() => {
     if (!token && window.location.href.indexOf('login') < 0) {
-      history.push('/login')
+      navigate('/login')
     }
-  }, [history, token])
+  }, [navigate, token])
 
   // 处理进来时展开的菜单
   const locationStr = location?.pathname.toString() || ''
@@ -117,9 +116,9 @@ const CustomLayout = (props: RouteConfig) => {
   const goToPage = useCallback(
     (menu: RouteConfig) => {
       // const path = menu.path.toLocaleString();
-      history.push(menu.path as any)
+      navigate(menu.path as any)
     },
-    [history],
+    [navigate],
   )
 
   function renderMenuItem(originRoutes: RouteConfig[]) {
@@ -296,7 +295,9 @@ const CustomLayout = (props: RouteConfig) => {
               <Avatar />
             </Space>
           </Header>
-          <Content className="content">{renderRoutes(route.routes)}</Content>
+          <Content className="content">
+            <Outlet />
+          </Content>
           <div className="footer">{t('APP NAME')}</div>
         </Layout>
       </Layout>

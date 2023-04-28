@@ -2,7 +2,7 @@ import { useRequest, useLocalStorageState } from 'ahooks'
 
 import { Form } from 'antd'
 import React, { useCallback } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { getHrefParam, isMobile } from '@/utils'
 import { setCookie } from '@/utils/cookie'
@@ -16,7 +16,7 @@ const { login: loginRequest } = api
 const LoginComponent = isMobile() ? Mobile : PC
 
 function Login() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [form] = Form.useForm()
   const params = getHrefParam()
   const [, setToken] = useLocalStorageState('TOKEN', {
@@ -30,12 +30,12 @@ function Login() {
       setToken(loginRes.token)
       setAdminInfo(loginRes.admin)
       if (params.redirect) {
-        history.push(params.redirect as string)
+        navigate(params.redirect as string)
       } else {
-        history.push('/')
+        navigate('/')
       }
     },
-    [history, params.redirect, setToken, setAdminInfo],
+    [navigate, params.redirect, setToken, setAdminInfo],
   )
 
   const { run: login, loading: loginLoading } = useRequest(

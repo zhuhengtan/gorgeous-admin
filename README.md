@@ -1,5 +1,7 @@
 ## 项目简介
 
+暂时请使用v1.0.0，正在研究更新react-router中...
+
 此项目用于快速初始化react+ts+antd的toB管理端前端项目，预置了登录、用户管理、权限管理模块。
 
 与[gorgeous-admin-server（node,koa）](https://github.com/zhuhengtan/gorgeous-admin-server)（[golang版本](https://github.com/CryBecase/gorgeous-admin-server-cli)）搭配使用体验更佳哦
