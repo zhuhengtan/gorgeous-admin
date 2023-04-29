@@ -3,14 +3,16 @@ import './lang/i18n'
 import { useLocalStorageState } from 'ahooks'
 import { ConfigProvider } from 'antd'
 import React, { useEffect } from 'react'
-import { BrowserRouter as Router, useRoutes, useParams } from 'react-router-dom'
+import {
+  BrowserRouter as Router, useRoutes, useParams, RouteObject,
+} from 'react-router-dom'
 
 import routes from '@/routes'
 
 import { languageMap } from './utils'
 
 function GetRoutes() {
-  const elements = useRoutes(routes)
+  const elements = useRoutes(routes as RouteObject[])
 
   return elements
 }

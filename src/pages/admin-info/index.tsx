@@ -195,7 +195,7 @@ const AdminInfoComponent: React.FC = () => {
 
       <Modal
         title={t('Edit password')}
-        visible={showFormDialog}
+        open={showFormDialog}
         maskClosable={false}
         onOk={submitChangePassword}
         onCancel={() => setShowFormDialog(false)}

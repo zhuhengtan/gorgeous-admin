@@ -113,7 +113,7 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
   return (
     <Modal
       title={id ? t('Edit admin') : t('Add admin')}
-      visible={visible}
+      open={visible}
       onCancel={handleCancel}
       onOk={onClickConfirm}
       confirmLoading={addLoading || updateLoading}

@@ -132,7 +132,7 @@ const Pages: React.FC = () => {
     return items.map((item: RouteConfig) => ({
       id: item.key || `tmp_${v4()}`,
       ...item,
-      routes: addKey(item.routes, level + 1),
+      routes: addKey(item.children, level + 1),
       pageType: 0,
       title: (
         <Space>

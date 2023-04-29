@@ -15,12 +15,15 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { matchPath, RouteObject, useNavigate } from 'react-router'
+import {
+  matchPath, useLocation, useNavigate,
+} from 'react-router'
 import { Outlet, Link } from 'react-router-dom'
+import allRoutes from '@/routes'
 
 import api from '@/service'
 import { AdminAuthContext } from '@/context/AdminAuthContext'
-import { AdminInfo } from '@/type'
+import { AdminInfo, CustomRouteObject } from '@/type'
 
 import Avatar from './avatar'
 import GlobalLan from './global-lan'
@@ -38,7 +41,6 @@ const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
 const CustomLayout = () => {
-  const { route, location } = useGetRoute()
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
@@ -57,14 +59,14 @@ const CustomLayout = () => {
   }, [navigate, token])
 
   // 处理进来时展开的菜单
-  const locationStr = location?.pathname.toString() || ''
+  const locationStr = useLocation().pathname
   let defaultSelectedKeys
   let defaultOpenKeys
   // 处理面包屑导航
   const breadcrumbList: Array<BreadcrumbItem> = []
-  route.routes.forEach((firstGrade: RouteConfig) => {
-    if (firstGrade.routes && firstGrade.routes.length) {
-      firstGrade.routes.forEach((secondGrade: RouteConfig) => {
+  allRoutes.forEach((firstGrade: CustomRouteObject) => {
+    if (firstGrade.children && firstGrade.children.length) {
+      firstGrade.children.forEach((secondGrade: CustomRouteObject) => {
         const match = matchPath(locationStr, secondGrade.path as string)
         if (match) {
           const currentFirstPath = firstGrade.path
@@ -79,16 +81,20 @@ const CustomLayout = () => {
           defaultOpenKeys = [
             locationStr === '/dashboard' ? '' : currentFirstPath,
           ]
-          breadcrumbList.push({
-            path: '',
-            name: firstGrade.name,
-            key: firstGrade.path?.toLocaleString || firstGrade.name,
-          })
-          breadcrumbList.push({
-            path: currentSecondPath,
-            name: secondGrade.name,
-            key: currentSecondPath,
-          })
+          if (firstGrade.name && firstGrade.path) {
+            breadcrumbList.push({
+              path: '',
+              name: firstGrade.name,
+              key: firstGrade.path || firstGrade.name,
+            })
+            if (secondGrade.name) {
+              breadcrumbList.push({
+                path: currentSecondPath,
+                name: secondGrade.name,
+                key: currentSecondPath,
+              })
+            }
+          }
         }
       })
     } else {
@@ -99,11 +105,13 @@ const CustomLayout = () => {
           : ''
         defaultSelectedKeys = [currentFirstPath]
         defaultOpenKeys = [currentFirstPath]
-        breadcrumbList.push({
-          path: '',
-          name: firstGrade.name,
-          key: firstGrade.path?.toLocaleString || firstGrade.name,
-        })
+        if (firstGrade.name && firstGrade.path) {
+          breadcrumbList.push({
+            path: '',
+            name: firstGrade.name,
+            key: firstGrade.path || firstGrade.name,
+          })
+        }
       }
     }
   })
@@ -114,22 +122,22 @@ const CustomLayout = () => {
   }, [collapsed])
 
   const goToPage = useCallback(
-    (menu: RouteConfig) => {
+    (menu: CustomRouteObject) => {
       // const path = menu.path.toLocaleString();
       navigate(menu.path as any)
     },
     [navigate],
   )
 
-  function renderMenuItem(originRoutes: RouteConfig[]) {
+  function renderMenuItem(originRoutes: CustomRouteObject[]) {
     return originRoutes
       .filter((item) => !item.hidden)
       .map((item) => {
         const { path, icon, name } = item
-        const routes = (item.routes || []).filter((item2) => !item2.hidden)
+        const routes = (item.children || []).filter((item2) => !item2.hidden)
         if (routes.length) {
           return (
-            <SubMenu key={path as string} icon={icon} title={t(name)}>
+            <SubMenu key={path as string} icon={icon} title={name}>
               {renderMenuItem(routes)}
             </SubMenu>
           )
@@ -140,10 +148,10 @@ const CustomLayout = () => {
             onClick={() => {
               goToPage(item)
             }}
-            title={t(name)}
+            title={name}
             icon={icon}
           >
-            {t(name)}
+            {name}
           </Menu.Item>
         )
       })
@@ -194,7 +202,7 @@ const CustomLayout = () => {
   // )
 
   const routeItemsWithPermission = useMemo(() => {
-    const filterRoutersByPermission = (routers: RouteConfig[]): MenuProps['items'] => {
+    const filterRoutersByPermission = (routers: CustomRouteObject[]): MenuProps['items'] => {
       const arr: MenuProps['items'] = []
       for (let i = 0; i < routers.length; i++) {
         const obj = { ...routers[i] }
@@ -216,8 +224,8 @@ const CustomLayout = () => {
           }
           continue
         }
-        if (obj.routes && obj.routes.length) {
-          const newRouters = filterRoutersByPermission(obj.routes)
+        if (obj.children && obj.children.length) {
+          const newRouters = filterRoutersByPermission(obj.children)
           if (newRouters && newRouters.length) {
             arr.push({
               key: obj.path as string,
@@ -242,8 +250,8 @@ const CustomLayout = () => {
       }
       return arr
     }
-    return filterRoutersByPermission(route.routes)
-  }, [goToPage, route, adminAuth])
+    return filterRoutersByPermission(allRoutes)
+  }, [goToPage, adminAuth])
 
   return (
     <AdminAuthContext.Provider value={finalAuth as any}>
