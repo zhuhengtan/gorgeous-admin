@@ -78,6 +78,7 @@ const routes: CustomRouteObject[] = [
   },
   {
     path: '*',
+    hidden: true,
     element: <Navigate to="/404" />,
   },
 ]

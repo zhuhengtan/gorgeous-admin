@@ -43,8 +43,7 @@ module.exports = {
       }],
     ],
   },
-  loaders: [
-    {
+  loaders: [{
       test: lessRegex,
       exclude: lessModuleRegex,
       use: {
@@ -59,20 +58,8 @@ module.exports = {
       },
     },
   ],
-  plugins: [
-    {
+  plugins: [{
       plugin: require("craco-less"),
-      options: {
-        lessLoaderOptions: {
-          lessOptions: {
-            modifyVars: {
-              'primary-color': '#ca0813',
-              'link-color': '#ca0813',
-            },
-            javascriptEnabled: true,
-          }
-        }
-      }
     },
     {
       plugin: require('craco-plugin-scoped-css'),
