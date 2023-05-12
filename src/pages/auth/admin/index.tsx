@@ -1,5 +1,3 @@
-import './index.less'
-
 import { usePagination, useRequest } from 'ahooks'
 import {
   Button, Input, Popconfirm, Row, Select, Space, Table, Tag,
@@ -10,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import api from '@/service'
 
 import AuthFragment from '@/components/auth-fragment'
+import styles from './index.module.less'
 import AddAdminForm from './add-admin-form'
 
 import { Admin, Role } from '../types'
@@ -175,7 +174,7 @@ const Admins: React.FC = () => {
 
   return (
     <div>
-      <div className="filter-container">
+      <div className={styles['filter-container']}>
         <div>
           <Input
             placeholder={t('Filter with admin name or email')}

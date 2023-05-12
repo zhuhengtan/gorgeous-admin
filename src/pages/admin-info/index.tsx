@@ -1,5 +1,3 @@
-import './index.less'
-
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useLocalStorageState, useRequest, useCountDown } from 'ahooks'
 import {
@@ -13,6 +11,7 @@ import { getCookie } from '@/utils/cookie'
 import api from '@/service'
 import { AdminInfo } from '@/type'
 import { showMessage } from '@/utils'
+import styles from './index.module.less'
 
 const {
   changePassword: changePasswordRequest,
@@ -107,12 +106,12 @@ const AdminInfoComponent: React.FC = () => {
   return (
     <>
       <Row justify="center" align="top">
-        <Col span={2} pull={2} className="title">
+        <Col span={2} pull={2} className={styles.title}>
           {t('Base info')}
         </Col>
         <Col span={3} style={{ borderBottom: '1px solid #ddd' }}>
-          <Row className="item-label">{t('Avatar')}</Row>
-          <Row className="item-content">
+          <Row className={styles['item-label']}>{t('Avatar')}</Row>
+          <Row className={styles['item-content']}>
             <Col>
               <Upload
                 withCredentials
@@ -156,23 +155,23 @@ const AdminInfoComponent: React.FC = () => {
               </Button> */}
             </Col>
           </Row>
-          <Row className="item-label">{t('Adminname')}</Row>
-          <Row className="item-content">{admin.name}</Row>
-          <Row className="item-label">{t('Email')}</Row>
-          <Row className="item-content">{admin.email}</Row>
-          <Row className="item-label">{t('Admin type')}</Row>
-          <Row className="item-content">
+          <Row className={styles['item-label']}>{t('Adminname')}</Row>
+          <Row className={styles['item-content']}>{admin.name}</Row>
+          <Row className={styles['item-label']}>{t('Email')}</Row>
+          <Row className={styles['item-content']}>{admin.email}</Row>
+          <Row className={styles['item-label']}>{t('Admin type')}</Row>
+          <Row className={styles['item-content']}>
             {admin.adminType === 1 ? t('System admin') : t('Created admin')}
           </Row>
         </Col>
       </Row>
       <Row justify="center" align="top" style={{ marginTop: '40px' }}>
-        <Col span={2} pull={2} className="title">
+        <Col span={2} pull={2} className={styles.title}>
           {t('Account secure')}
         </Col>
         <Col span={3} style={{ borderBottom: '1px solid #ddd' }}>
-          <Row className="item-label">{t('Password')}</Row>
-          <Row className="item-content">
+          <Row className={styles['item-label']}>{t('Password')}</Row>
+          <Row className={styles['item-content']}>
             <Col>******</Col>
             <Col span={1} push={24}>
               <Button

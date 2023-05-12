@@ -1,8 +1,7 @@
-import './index.less'
-
 import { Button, Form, Input } from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import React from 'react'
+import styles from './index.module.less'
 
 interface Props {
   loading: boolean
@@ -22,9 +21,9 @@ function MobileLogin(props: Props) {
   }
 
   return (
-    <div className="mobile-container">
-      <div className="logo"></div>
-      <div className="login-panel">
+    <div className={styles['mobile-container']}>
+      <div className={styles.logo}></div>
+      <div className={styles['login-panel']}>
         <Form
           form={form}
           name="login"
@@ -57,7 +56,7 @@ function MobileLogin(props: Props) {
           </Form.Item>
           <Form.Item>
             <Button
-              className="login-btn"
+              className={styles['login-btn']}
               onClick={handlelogin}
               loading={loading}
             >

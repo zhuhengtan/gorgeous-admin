@@ -27,6 +27,19 @@ const routes: CustomRouteObject[] = [
     element: <Navigate to="/admin-info" />,
   },
   {
+    path: '/admin-info',
+    hidden: true,
+    element: <Layout />,
+    children: [
+      {
+        path: '/admin-info',
+        name: t('Admin info'),
+        checkAuth: false,
+        element: <AdminInfo />,
+      },
+    ],
+  },
+  {
     path: '/auth',
     name: t('Auth management'),
     icon: <SecurityScanOutlined />,
@@ -63,10 +76,10 @@ const routes: CustomRouteObject[] = [
     hidden: true,
     element: <NotFound />,
   },
-  // {
-  //   path: '*',
-  //   element: () => <Redirect to="/404" />,
-  // },
+  {
+    path: '*',
+    element: <Navigate to="/404" />,
+  },
 ]
 
 export default routes

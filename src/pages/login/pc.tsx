@@ -1,5 +1,3 @@
-import './index.less'
-
 import {
   Button, Form, Input, Switch,
 } from 'antd'
@@ -8,6 +6,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 import GlobalLan from '@/components/layout/global-lan'
+import styles from './index.module.less'
 
 interface Props {
   loading: boolean
@@ -28,12 +27,12 @@ const PCLogin: React.FC<Props> = (props: Props) => {
   }
 
   return (
-    <div className="pc-container">
-      <div className="logo"></div>
-      <div className="login-panel">
-        <div className="app-name">{t('APP NAME')}</div>
-        <div className="panel">
-          <div className="language">
+    <div className={styles['pc-container']}>
+      <div className={styles.logo}></div>
+      <div className={styles['login-panel']}>
+        <div className={styles['app-name']}>{t('APP NAME')}</div>
+        <div className={styles.panel}>
+          <div className={styles.language}>
             <GlobalLan />
           </div>
           <Form
@@ -68,7 +67,7 @@ const PCLogin: React.FC<Props> = (props: Props) => {
             </Form.Item>
             <Form.Item>
               <Button
-                className="login-btn"
+                className={styles['login-btn']}
                 onClick={handlelogin}
                 loading={loading}
               >
