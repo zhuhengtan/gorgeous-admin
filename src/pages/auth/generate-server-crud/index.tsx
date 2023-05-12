@@ -28,13 +28,13 @@ const GenerateServerCRUD: React.FC = () => {
     properties: {
       entityName: {
         type: 'string',
-        hidden: '{{ rootValue.pageType === 0 }}',
+        hidden: '{{ formData.pageType === 0 }}',
         title: t('Page entity name'),
         placeholder: t('Page entity placeholder'),
       },
       fields: {
         type: 'array',
-        hidden: '{{ rootValue.pageType === 0 }}',
+        hidden: '{{ formData.pageType === 0 }}',
         title: t('Page fields'),
         widget: 'field',
       },

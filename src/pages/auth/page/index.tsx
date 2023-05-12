@@ -293,7 +293,7 @@ const Pages: React.FC = () => {
       },
       operations: {
         type: 'array',
-        hidden: '{{ rootValue.pageType !== 0 || !rootValue.checkAuth }}',
+        hidden: '{{ formData.pageType !== 0 || !formData.checkAuth }}',
         title: t('Page operations'),
         widget: 'operationEdit',
         props: {
