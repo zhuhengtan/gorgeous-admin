@@ -5,6 +5,12 @@ import { initReactI18next } from 'react-i18next'
 import enUsTrans from './en-us.json'
 import zhCnTrans from './zh-cn.json'
 
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    returnNull: false
+  }
+}
+
 i18n
   .use(LanguageDetector) // 嗅探当前浏览器语言
   .use(initReactI18next) // init i18next
@@ -24,6 +30,7 @@ i18n
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
+    returnNull: false,
   })
 
 export default i18n
