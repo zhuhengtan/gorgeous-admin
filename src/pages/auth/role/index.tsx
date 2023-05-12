@@ -119,7 +119,7 @@ const Roles: React.FC = () => {
   }, [getRoles])
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" className="width-100p">
       <AuthFragment authKey="create">
         <Button
           type="primary"

@@ -171,13 +171,11 @@ const Pages: React.FC = () => {
   }, [setRoutes, addKey])
 
   const onClickUpdate = useCallback(() => {
-    const data = form.getValues()
-    updatePage(data)
+    updatePage({ ...form.getValues(), ...form.getHiddenValues() })
   }, [form, updatePage])
 
   const onClickCreate = useCallback(() => {
     const data = form.getValues()
-    console.log(data)
     const tmp = { ...data }
     delete tmp.id
     createPage(tmp)
