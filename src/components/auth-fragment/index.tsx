@@ -1,19 +1,11 @@
 import React, {
-  ReactChild,
+  ReactNode,
   ReactFragment,
   ReactPortal,
   useContext,
 } from 'react'
 
 import { AdminAuthContext } from '@/context/AdminAuthContext'
-
-type ReactNode =
-  | ReactChild
-  | ReactFragment
-  | ReactPortal
-  | boolean
-  | null
-  | undefined
 
 interface Props {
   otherConditions?: boolean
