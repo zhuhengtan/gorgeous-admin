@@ -1,4 +1,3 @@
-/* eslint-disable no-continue */
 import './index.less'
 import 'antd/es/layout/style'
 
@@ -8,7 +7,6 @@ import { useLocalStorageState, useRequest } from 'ahooks'
 import {
   Breadcrumb,
   Layout, Menu,
-  MenuProps,
   Space,
 } from 'antd'
 import React, {
@@ -22,14 +20,13 @@ import { Outlet, Link } from 'react-router-dom'
 import allRoutes from '@/routes'
 
 import api from '@/service'
-import { AdminAuthContext } from '@/context/AdminAuthContext'
-import { AdminInfo, CustomRouteObject } from '@/type'
 
+import { CustomRouteObject } from '@/type'
+
+import useGetAuthRoutes from '@/routes/auth-routes'
 import Avatar from './avatar'
 import GlobalLan from './global-lan'
 import Logo from './logo'
-
-const { getAdminAuth: getAdminAuthRequest } = api
 
 interface BreadcrumbItem {
   path: string
@@ -44,9 +41,6 @@ const CustomLayout = () => {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const { t } = useTranslation()
-  const [adminAuth, setAdminAuth] = useState({})
-  const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
-  const [admin] = useLocalStorageState('USER_INFO')
 
   // 如果没有登录，跳转登录页
   const [token] = useLocalStorageState('TOKEN', {
@@ -121,195 +115,63 @@ const CustomLayout = () => {
     setCollapsed(!collapsed)
   }, [collapsed])
 
-  const goToPage = useCallback(
-    (menu: CustomRouteObject) => {
-      // const path = menu.path.toLocaleString();
-      navigate(menu.path as any)
-    },
-    [navigate],
-  )
-
-  function renderMenuItem(originRoutes: CustomRouteObject[]) {
-    return originRoutes
-      .filter((item) => !item.hidden)
-      .map((item) => {
-        const { path, icon, name } = item
-        const routes = (item.children || []).filter((item2) => !item2.hidden)
-        if (routes.length) {
-          return (
-            <SubMenu key={path as string} icon={icon} title={name}>
-              {renderMenuItem(routes)}
-            </SubMenu>
-          )
-        }
-        return (
-          <Menu.Item
-            key={path as string}
-            onClick={() => {
-              goToPage(item)
-            }}
-            title={name}
-            icon={icon}
-          >
-            {name}
-          </Menu.Item>
-        )
-      })
-  }
-
-  const { run: getAdminAuth } = useRequest(() => getAdminAuthRequest({ id: (admin as AdminInfo).id }), {
-    manual: true,
-    onSuccess(e: any) {
-      setAdminAuth(e.auth)
-      setAuth(e.auth)
-    },
-  })
-
-  useEffect(() => {
-    if (token) {
-      getAdminAuth()
-    }
-  }, [getAdminAuth, token])
-
-  // const filterRoutersByPermission = useCallback(
-  //   (routers: RouteConfig[]) => {
-  //     const arr: RouteConfig[] = []
-  //     routers.some((router) => {
-  //       const obj = { ...router }
-  //       if (
-  //         obj.checkAuth
-  //         && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
-  //       ) {
-  //         arr.push(obj)
-  //       }
-  //       if (obj.routes && obj.routes.length) {
-  //         const newRouters = filterRoutersByPermission(obj.routes)
-  //         if (newRouters.length) {
-  //           obj.routes = newRouters
-  //           arr.push(obj)
-  //           return true
-  //         }
-  //         return true
-  //       }
-  //       if (!obj.checkAuth) {
-  //         arr.push(obj)
-  //       }
-  //       return false
-  //     })
-  //     return arr
-  //   },
-  //   [adminAuth],
-  // )
-
-  const routeItemsWithPermission = useMemo(() => {
-    const filterRoutersByPermission = (routers: CustomRouteObject[]): MenuProps['items'] => {
-      const arr: MenuProps['items'] = []
-      for (let i = 0; i < routers.length; i++) {
-        const obj = { ...routers[i] }
-        if (obj.hidden) {
-          continue
-        }
-        if (obj.checkAuth) {
-          if (Object.hasOwn(adminAuth, obj.path as string)) {
-            arr.push({
-              key: obj.path as string,
-              icon: obj.icon,
-              title: obj.name,
-              label: obj.name,
-              onClick: () => {
-                goToPage(obj)
-              },
-            })
-            continue
-          }
-          continue
-        }
-        if (obj.children && obj.children.length) {
-          const newRouters = filterRoutersByPermission(obj.children)
-          if (newRouters && newRouters.length) {
-            arr.push({
-              key: obj.path as string,
-              icon: obj.icon,
-              title: obj.name,
-              label: obj.name,
-              children: newRouters,
-            })
-            continue
-          }
-          continue
-        }
-        arr.push({
-          key: obj.path as string,
-          icon: obj.icon,
-          title: obj.name,
-          label: obj.name,
-          onClick: () => {
-            goToPage(obj)
-          },
-        })
-      }
-      return arr
-    }
-    return filterRoutersByPermission(allRoutes)
-  }, [goToPage, adminAuth])
+  const { menuList } = useGetAuthRoutes()
 
   return (
-    <AdminAuthContext.Provider value={finalAuth as any}>
-      <Layout className="layout-container">
-        <Sider
-          width={200}
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          className="side-bar"
-        >
-          <Logo collapsed={collapsed} />
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={defaultSelectedKeys}
-            defaultOpenKeys={defaultOpenKeys}
-            selectedKeys={defaultSelectedKeys}
-            items={routeItemsWithPermission}
-          />
-        </Sider>
-        <Layout className="right-container">
-          <Header className="header">
-            <div className="left">
-              {React.createElement(
-                collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-                {
-                  onClick: toggleCollapse,
-                },
-              )}
-              <Breadcrumb className="breadcrumb">
-                {breadcrumbList.map((item: BreadcrumbItem) => {
-                  if (typeof item === 'object') {
-                    return (
-                      <Breadcrumb.Item key={item.key}>
-                        {item.path ? (
-                          <Link to={item.path}>{t(item.name)}</Link>
-                        ) : (
-                          t(item.name)
-                        )}
-                      </Breadcrumb.Item>
-                    )
-                  }
-                  return <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
-                })}
-              </Breadcrumb>
-            </div>
-            <Space direction="horizontal" align="center">
-              <GlobalLan />
-              <Avatar />
-            </Space>
-          </Header>
-          <Content className="content">
-            <Outlet />
-          </Content>
-          <div className="footer">{t('APP NAME')}</div>
-        </Layout>
+    <Layout className="layout-container">
+      <Sider
+        width={200}
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        className="side-bar"
+      >
+        <Logo collapsed={collapsed} />
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={defaultSelectedKeys}
+          defaultOpenKeys={defaultOpenKeys}
+          selectedKeys={defaultSelectedKeys}
+          items={menuList}
+        />
+      </Sider>
+      <Layout className="right-container">
+        <Header className="header">
+          <div className="left">
+            {React.createElement(
+              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+              {
+                onClick: toggleCollapse,
+              },
+            )}
+            <Breadcrumb className="breadcrumb">
+              {breadcrumbList.map((item: BreadcrumbItem) => {
+                if (typeof item === 'object') {
+                  return (
+                    <Breadcrumb.Item key={item.key}>
+                      {item.path ? (
+                        <Link to={item.path}>{t(item.name)}</Link>
+                      ) : (
+                        t(item.name)
+                      )}
+                    </Breadcrumb.Item>
+                  )
+                }
+                return <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
+              })}
+            </Breadcrumb>
+          </div>
+          <Space direction="horizontal" align="center">
+            <GlobalLan />
+            <Avatar />
+          </Space>
+        </Header>
+        <Content className="content">
+          <Outlet />
+        </Content>
+        <div className="footer">{t('APP NAME')}</div>
       </Layout>
-    </AdminAuthContext.Provider>
+    </Layout>
   )
 }
 export default React.memo(CustomLayout)
