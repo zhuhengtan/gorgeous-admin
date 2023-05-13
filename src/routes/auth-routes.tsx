@@ -1,11 +1,7 @@
 /* eslint-disable no-continue */
 import routes from '@/routes'
 import { CustomRouteObject, AdminInfo } from '@/type'
-import {
-  useNavigate,
-  useRoutes,
-  RouteObject,
-} from 'react-router'
+import { useNavigate, useRoutes, RouteObject } from 'react-router'
 
 import React, {
   useEffect, useState, useMemo, useCallback,
@@ -17,7 +13,12 @@ import { AdminAuthContext } from '@/context/AdminAuthContext'
 
 export default function useGetAuthRoutes() {
   const navigate = useNavigate()
-  const [adminAuth, setAdminAuth] = useState({})
+  const [adminAuth, setAdminAuth] = useState<{
+    [key: string]: {
+      operationKey: string;
+      operationName: string;
+    };
+  }>({})
   const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
   // 如果没有登录，跳转登录页
   const [token] = useLocalStorageState('TOKEN', {
@@ -25,13 +26,17 @@ export default function useGetAuthRoutes() {
   })
   const [admin] = useLocalStorageState('USER_INFO')
 
-  const { run: getAdminAuth } = useRequest(() => api.getAdminAuth({ id: (admin as AdminInfo).id }), {
-    manual: true,
-    onSuccess(e: any) {
-      setAdminAuth(e.auth)
-      setAuth(e.auth)
+  const { run: getAdminAuth } = useRequest(
+    () => api.getAdminAuth({ id: (admin as AdminInfo).id }),
+    {
+      cacheKey: 'USER_AUTH',
+      manual: true,
+      onSuccess(e: any) {
+        setAdminAuth(e.auth)
+        setAuth(e.auth)
+      },
     },
-  })
+  )
 
   useEffect(() => {
     if (token) {
@@ -48,33 +53,38 @@ export default function useGetAuthRoutes() {
     [navigate],
   )
 
-  const authedRoutes = useMemo<CustomRouteObject[]>(
-    () => {
-      const filterRoutersByPermission = (routers: CustomRouteObject[]): CustomRouteObject[] => {
-        const arr: CustomRouteObject[] = []
-        routers.forEach((router) => {
-          const obj = { ...router }
-          if (obj.children && obj.children.length) {
-            const childRouters = filterRoutersByPermission(obj.children)
-            if (childRouters.length) {
-              obj.children = childRouters
-              arr.push(obj)
-            }
-          } else {
-            if (obj.checkAuth && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)) {
-              arr.push(obj)
-            }
-            if (!obj.checkAuth) {
-              arr.push(obj)
-            }
+  const authedRoutes = useMemo<CustomRouteObject[]>(() => {
+    if (Object.keys(adminAuth).length <= 0) {
+      return routes
+    }
+    const filterRoutersByPermission = (
+      routers: CustomRouteObject[],
+    ): CustomRouteObject[] => {
+      const arr: CustomRouteObject[] = []
+      routers.forEach((router) => {
+        const obj = { ...router }
+        if (obj.children && obj.children.length) {
+          const childRouters = filterRoutersByPermission(obj.children)
+          if (childRouters.length) {
+            obj.children = childRouters
+            arr.push(obj)
           }
-        })
-        return arr
-      }
-      return filterRoutersByPermission(routes)
-    },
-    [adminAuth],
-  )
+        } else {
+          if (
+            obj.checkAuth
+            && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
+          ) {
+            arr.push(obj)
+          }
+          if (!obj.checkAuth) {
+            arr.push(obj)
+          }
+        }
+      })
+      return arr
+    }
+    return filterRoutersByPermission(routes)
+  }, [adminAuth])
 
   const menuList = useMemo<MenuProps['items']>(() => {
     const formatMenus = (routers: CustomRouteObject[]): MenuProps['items'] => {
