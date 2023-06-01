@@ -17,6 +17,30 @@ cd gorgeous-admin
 npm i && npm start
 ```
 
+### 新增docker部署
+
+打包：
+
+``` bash
+docker buildx build --build-arg BUILD_ENV=ready . -t [项目名]
+```
+
+启动：
+
+``` bash
+docker run -d -p 81:80 [-t后面配置的参数]
+```
+
+查看运行中的容器：
+``` bash
+docker container ls
+```
+
+停止：
+``` bash
+docker stop [pid]
+```
+
 ## 服务端
 
 ### 环境搭建
