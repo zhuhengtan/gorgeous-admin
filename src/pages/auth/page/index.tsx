@@ -18,6 +18,7 @@ import localRoutes from '@/routes'
 import { RouteConfig } from 'react-router-config'
 import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
+import { PageType } from '@/type'
 import OperationEdit from './operation'
 import { Operation, Page, FieldItem } from '../types'
 
@@ -30,6 +31,7 @@ interface EditingRoute {
   pageType: number
   operations: Operation[]
   content: FieldItem[] | null
+  entityName?: string
 }
 
 interface CurrentOperation {
@@ -102,6 +104,7 @@ const Pages: React.FC = () => {
             relatedApi: '',
           }],
           content: null,
+          entityName: selectedLocalRoute?.entityName,
         }
         form.setValues(newRoute)
         setEditingRoute(newRoute)
@@ -133,7 +136,7 @@ const Pages: React.FC = () => {
       id: item.key || `tmp_${v4()}`,
       ...item,
       routes: addKey(item.children, level + 1),
-      pageType: 0,
+      pageType: item.pageType || 0,
       title: (
         <Space>
           {item.icon ? item.icon : <div style={{ width: 14, height: 24 }}></div>}
@@ -284,10 +287,11 @@ const Pages: React.FC = () => {
       pageType: {
         type: 'number',
         title: t('Page type'),
-        enum: [0], // , 1, 2
-        enumNames: [t('Page type hand-writing') as string, t('Page type configure') as string, t('Page type generate') as string],
+        enum: [PageType.HandWrited, PageType.Generated], // , 1, 2
+        enumNames: [t('Page type hand-writing') as string, t('Page type generate') as string, t('Page type configure') as string],
         default: 0,
         widget: 'radio',
+        disabled: true,
       },
       operations: {
         type: 'array',
@@ -297,6 +301,12 @@ const Pages: React.FC = () => {
         props: {
           onDeleteOperation,
         },
+      },
+      entityName: {
+        type: 'string',
+        hidden: '{{ formData.pageType !== 1 }}',
+        title: t('Page entity name'),
+        disabled: true,
       },
     },
   }), [t, onDeleteOperation])

@@ -4,6 +4,7 @@ import Form, { useForm, FRProps } from 'form-render'
 import api from '@/service'
 import { Button } from 'antd'
 import { useRequest } from 'ahooks'
+import AuthFragment from '@/components/auth-fragment'
 import Field from './field'
 
 const {
@@ -55,7 +56,9 @@ const GenerateServerCRUD: React.FC = () => {
           field: Field,
         }}
       />
-      <Button type="primary" onClick={submit}>{t('Submit')}</Button>
+      <AuthFragment authKey="create">
+        <Button type="primary" onClick={submit}>{t('Submit')}</Button>
+      </AuthFragment>
     </>
   )
 }

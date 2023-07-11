@@ -36,6 +36,7 @@ const apiList: ApiList = {
 
   // 生成后端crud代码
   generateServerCrud: 'POST /api/b/auth/generate-server-crud',
+  getGeneratedEntityDetail: 'GET /api/b/auth/generated-entity',
 }
 
 export default apiList
