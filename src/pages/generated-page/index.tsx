@@ -156,6 +156,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
               size="small"
               type="primary"
               onClick={() => {
+                setIsEdit(true)
                 form.setValues(rowData)
                 setOpen(true)
               }}
