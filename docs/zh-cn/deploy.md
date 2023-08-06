@@ -38,9 +38,21 @@ vim /etc/yum.repos.d/mysql-community.repo
 ```
 yum -y install mysql-community-server
 ```
-> 这里安装如果报错：源 "MySQL 5.7 Community Server" 的 GPG 密钥已安装，但是不适用于此软件包。请检查源的公钥 URL 是否配置正确。是需要rpm引入一下公钥：
+> 如果报错：源 "MySQL 5.7 Community Server" 的 GPG 密钥已安装，但是不适用于此软件包。请检查源的公钥 URL 是否配置正确。是需要rpm引入一下公钥：
 > 
 > ```rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022```
+>
+> 如果报错：没有任何匹配: mysql-community-server
+> 这时候执行：
+> ```yum module disable mysql```
+>
+> 如果报错： file /etc/my.cnf from install of mysql-community-server-5.7.43-1.el7.x86_64 conflicts with file from package mariadb-connector-c-config-3.1.11-2.tl3.noarch
+> 是该Linux机器内嵌集成了该Mariadb包，造成冲突
+> 查看本机被内嵌的Mariadb
+> ```rpm -qa | grep mariadb```
+> 使用`rpm -e --nodeps package`将内嵌集成的Mariadb卸载掉
+> ```rpm -e --nodeps mariadb-connector-c-config-3.1.11-2.el8_3.noarch```
+> ```rpm -e --nodeps mariadb-connector-c-3.1.11-2.el8_3.x86_64```
 > 
 > 然后再执行上面安装命令即可
 
