@@ -58,11 +58,23 @@ module.exports = {
       },
     },
   ],
-  plugins: [{
-      plugin: require("craco-less"),
-    },
+  plugins: [
     {
-      plugin: require('craco-plugin-scoped-css'),
+      plugin: CracoLessPlugin,
+      options: {
+        modifyLessModuleRule(lessModuleRule, context) {
+          // Configure the file suffix
+          lessModuleRule.test = /.module.less$/;
+ 
+          // Configure the generated local ident name.
+          console.log(lessModuleRule)
+          const cssLoader = lessModuleRule.use.find(loaderByName("css-loader"));
+          cssLoader.options.modules = {
+            localIdentName: "[local]_[hash:base64:5]",
+          };
+          return lessModuleRule;
+        },
+      },
     },
   ],
 };
