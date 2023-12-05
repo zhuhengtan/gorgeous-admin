@@ -35,7 +35,7 @@ const GlobalLan: FC = () => {
         <GlobalOutlined
           style={{ color: 'black', fontSize: 18, display: 'block' }}
         />
-        <span className="name">{(languageMap as any)[language].name}</span>
+        <span className="name">{(languageMap as any)[language!].name}</span>
       </div>
     </Dropdown>
   )

@@ -311,7 +311,7 @@ const Pages: React.FC = () => {
     },
   }), [t, onDeleteOperation])
 
-  const onClickTreeNode = useCallback((selectedKeys: (string | number)[], e: any) => {
+  const onClickTreeNode = useCallback((selectedKeys: React.Key[], e: any) => {
     const route: any = e.selectedNodes[0]
     setSelectedLocalRoute(route)
     if (route.checkAuth) { // 如果有checkAuth，看后台有没有存此页信息，没有则为新增

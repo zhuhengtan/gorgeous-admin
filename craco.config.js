@@ -1,7 +1,8 @@
 const path = require('path');
 
 const pathResolve = (pathUrl) => path.join(__dirname, pathUrl);
-
+const CracoLessPlugin = require('craco-less')
+const {loaderByName} = require('@craco/craco')
 const lessRegex = /\.less$/;
 const lessModuleRegex = /\.module\.less$/;
 

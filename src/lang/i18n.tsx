@@ -9,6 +9,7 @@ declare module 'i18next' {
   interface CustomTypeOptions {
     returnNull: false
   }
+  type TFunctionResult = string
 }
 
 i18n

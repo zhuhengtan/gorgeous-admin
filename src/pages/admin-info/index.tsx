@@ -77,7 +77,7 @@ const AdminInfoComponent: React.FC = () => {
     },
   )
 
-  const { run: sendChangePwd } = useRequest(() => sendChangePwdCodeRequest({ email: admin.email }), {
+  const { run: sendChangePwd } = useRequest(() => sendChangePwdCodeRequest({ email: admin?.email }), {
     manual: true,
     onSuccess() {
       showMessage(t('Get email code success'))
@@ -88,7 +88,7 @@ const AdminInfoComponent: React.FC = () => {
   // 修改密码
   const submitChangePassword = useCallback(async () => {
     const fields = form.getFieldsValue()
-    if (admin && admin.id) {
+    if (admin && admin?.id) {
       changePassword({
         email: fields.email,
         code: fields.code,
@@ -129,7 +129,7 @@ const AdminInfoComponent: React.FC = () => {
                   if (info.file.status === 'done') {
                     message.success(`${info.file.name} ${t('Upload success')}`)
                     changeAvatar({
-                      id: admin.id,
+                      id: admin?.id,
                       avatar_url: info.file.response.data,
                     })
                   } else if (info.file.status === 'error') {
@@ -138,9 +138,9 @@ const AdminInfoComponent: React.FC = () => {
                   setLoading(false)
                 }}
               >
-                {admin.avatar ? (
+                {admin?.avatar ? (
                   <img
-                    src={admin.avatar}
+                    src={admin?.avatar}
                     alt="avatar"
                     style={{ width: '100%', cursor: 'pointer' }}
                   />
@@ -156,12 +156,12 @@ const AdminInfoComponent: React.FC = () => {
             </Col>
           </Row>
           <Row className={styles['item-label']}>{t('Adminname')}</Row>
-          <Row className={styles['item-content']}>{admin.name}</Row>
+          <Row className={styles['item-content']}>{admin?.name}</Row>
           <Row className={styles['item-label']}>{t('Email')}</Row>
-          <Row className={styles['item-content']}>{admin.email}</Row>
+          <Row className={styles['item-content']}>{admin?.email}</Row>
           <Row className={styles['item-label']}>{t('Admin type')}</Row>
           <Row className={styles['item-content']}>
-            {admin.adminType === 1 ? t('System admin') : t('Created admin')}
+            {admin?.adminType === 1 ? t('System admin') : t('Created admin')}
           </Row>
         </Col>
       </Row>
@@ -179,7 +179,7 @@ const AdminInfoComponent: React.FC = () => {
                 onClick={() => {
                   setShowFormDialog(true)
                   form.setFieldsValue({
-                    email: admin.email,
+                    email: admin?.email,
                     code: '',
                     newPassword: '',
                   })
