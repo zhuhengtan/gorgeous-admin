@@ -18,12 +18,7 @@ export default function pureReqeust(api: string, data?: QueryData, options?: Axi
   }
   const timestamp = (new Date()).getTime()
   data.timestamp = timestamp
-  data.sign = md5(`${Object.keys(data).filter((key) => (key !== 'timestamp' && key !== 'sign')).map((key) => {
-    if (typeof (data as QueryData)[key] === 'number') {
-      return JSON.stringify(String((data as QueryData)[key]))
-    }
-    return JSON.stringify((data as QueryData)[key])
-  }).join('')}${timestamp}${process.env.REACT_APP_SIGN_KEY}`).toUpperCase()
+  data.sign = md5(`${timestamp}${process.env.REACT_APP_SIGN_KEY}`).toUpperCase()
 
   const queryParams: QueryParams = {
     url,
