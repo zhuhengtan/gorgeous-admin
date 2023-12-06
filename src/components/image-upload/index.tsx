@@ -16,7 +16,7 @@ const ImageUpload: React.FC<Props> = (props) => {
   const [loading, setLoading] = useState<boolean>(false)
 
   if (readOnly) {
-    return <Image src={value} />
+    return <Image src={value} width={100} height="auto" />
   }
   return (
     <Upload
