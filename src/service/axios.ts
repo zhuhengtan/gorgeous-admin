@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 
 import { defaultGetErrorMsg, showError, showMessage } from '@/utils'
-import { getCookie } from '@/utils/cookie'
+import { deleteCookie, getCookie } from '@/utils/cookie'
 
 const CONFIG = {
   baseURL: process.env.API_HOST || '',
@@ -40,6 +40,8 @@ axiosInstance.interceptors.response.use(
   (response) => {
     const res = response.data
     if (res.code === 401) {
+      deleteCookie('token')
+      localStorage.clear()
       showError(res.message)
       window.location.assign('/login')
     } else if (res.code !== 200) {
