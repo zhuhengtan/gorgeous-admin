@@ -130,6 +130,18 @@ const Fields: React.FC<Props> = (props: Props) => {
       },
       {
         type: 'input',
+        title: 'table dataIndex',
+        key: 'tableDataIndex',
+        width: 100,
+      },
+      {
+        type: 'input',
+        title: '显示的keyPath',
+        key: 'tableDisplayKey',
+        width: 100,
+      },
+      {
+        type: 'input',
         title: t('Configuration item comment'),
         key: 'comment',
         width: 100,

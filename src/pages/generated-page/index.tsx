@@ -10,13 +10,15 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import pureReqeust from '@/service/pure-request'
+import pureRequest from '@/service/pure-request'
 import { usePagination, useRequest } from 'ahooks'
 import AuthFragment from '@/components/auth-fragment'
 import Api from '@/service'
 import FormRender, { FRProps, useForm } from 'form-render'
 import { ColumnsType } from 'antd/es/table'
 import ImageUpload from '@/components/image-upload'
+import MatchSelect from '@/components/select/match-select'
+import { useRoutes } from 'react-router'
 
 const WIDGETS_MAP: {
   [key in any]: NamedExoticComponent<{
@@ -42,6 +44,8 @@ interface EntityDetailKey {
   columnType: string;
   editComponent: string;
   columnDefaultValue: string;
+  tableDataIndex: string;
+  tableDisplayKey: string;
 }
 
 type RowData = {
@@ -88,7 +92,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
 
   const [data, setData] = useState([])
   const { run: getDataList, pagination } = usePagination(
-    ({ current, pageSize }) => pureReqeust(apis.view, { page: current, pageSize }) as Promise<any>,
+    ({ current, pageSize }) => pureRequest(apis.view, { page: current, pageSize }) as Promise<any>,
     {
       manual: true,
       onSuccess(res) {
@@ -98,7 +102,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
   )
 
   const { run: create, loading: creating } = useRequest(
-    (params) => pureReqeust(apis.create, params),
+    (params) => pureRequest(apis.create, params),
     {
       manual: true,
       onSuccess(res) {
@@ -109,7 +113,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
   )
 
   const { run: update } = useRequest(
-    (params) => pureReqeust(apis.update, params),
+    (params) => pureRequest(apis.update, params),
     {
       manual: true,
       onSuccess() {
@@ -123,7 +127,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
   )
 
   const { run: deleteRow } = useRequest(
-    (id) => pureReqeust(apis.delete, { id }),
+    (id) => pureRequest(apis.delete, { id }),
     {
       manual: true,
       onSuccess() {
@@ -155,14 +159,22 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
     }
   }, [entityDetail])
 
-  const columns = useMemo<ColumnsType<RowData>>(() => {
+  const columns = useMemo<ColumnsType<any>>(() => {
     if (!entityDetail) {
       return []
     }
-    const tmp: ColumnsType<RowData> = entityDetail?.keys.map((keyItem) => ({
-      dataIndex: keyItem.name,
+    const tmp: ColumnsType<any> = entityDetail?.keys.map((keyItem) => ({
+      dataIndex: keyItem.tableDataIndex || keyItem.name,
       title: keyItem.title,
       render: (value, row) => {
+        if (keyItem.tableDisplayKey) {
+          const keyPath = keyItem.tableDisplayKey.split('.')
+          let v: any = row
+          keyPath.forEach((key) => {
+            v = v[key]
+          })
+          return <span>{v}</span>
+        }
         if (keyItem.editComponent) {
           return React.createElement(WIDGETS_MAP[keyItem.editComponent], {
             readOnly: true,
@@ -270,6 +282,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
           removeHiddenData={false}
           widgets={{
             imageUpload: ImageUpload,
+            matchSelect: MatchSelect,
           }}
         />
       </Modal>
