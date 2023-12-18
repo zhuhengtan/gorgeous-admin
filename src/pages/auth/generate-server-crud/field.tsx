@@ -142,6 +142,12 @@ const Fields: React.FC<Props> = (props: Props) => {
       },
       {
         type: 'input',
+        title: '编辑时的keyPath',
+        key: 'valueKey',
+        width: 100,
+      },
+      {
+        type: 'input',
         title: t('Configuration item comment'),
         key: 'comment',
         width: 100,

@@ -1,4 +1,3 @@
-import { AdminAuthContext } from '@/context/AdminAuthContext'
 import {
   Button, Modal, Popconfirm, Space, Table, TableColumnType,
 } from 'antd'
@@ -10,15 +9,15 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import pureRequest from '@/service/pure-request'
 import { usePagination, useRequest } from 'ahooks'
-import AuthFragment from '@/components/auth-fragment'
-import Api from '@/service'
 import FormRender, { FRProps, useForm } from 'form-render'
 import { ColumnsType } from 'antd/es/table'
+import pureRequest from '@/service/pure-request'
+import AuthFragment from '@/components/auth-fragment'
+import Api from '@/service'
+import { AdminAuthContext } from '@/context/AdminAuthContext'
 import ImageUpload from '@/components/image-upload'
-import MatchSelect from '@/components/select/match-select'
-import { useRoutes } from 'react-router'
+import DateTimePicker from '@/components/date-time-picker'
 
 const WIDGETS_MAP: {
   [key in any]: NamedExoticComponent<{
@@ -46,16 +45,20 @@ interface EntityDetailKey {
   columnDefaultValue: string;
   tableDataIndex: string;
   tableDisplayKey: string;
+  valueKey: string;
 }
 
 type RowData = {
-  id: number;
-} & Partial<EntityDetailKey>;
+  id: number
+} & {
+  [key in string]: any
+}
 
 interface EntityDetail {
   id: number;
   entityName: string;
   keys: EntityDetailKey[];
+  editSchema?: string;
   createdAt: string;
   deletedAt: string;
 }
@@ -87,7 +90,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
   })
   useEffect(() => {
     getGeneratedEntityDetail()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [data, setData] = useState([])
@@ -199,7 +202,26 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
               type="primary"
               onClick={() => {
                 setIsEdit(true)
-                form.setValues(rowData)
+                const rowValue: RowData = { id: rowData.id }
+                const schema: FRProps['schema'] = entityDetail?.editSchema ? JSON.parse(entityDetail.editSchema) : editSchema
+                if (schema.properties && Object.keys(schema.properties).length > 0) {
+                  Object.keys(schema.properties).forEach((key) => {
+                    if (!schema.properties![key].disabled) {
+                      const tableDisplayKey = entityDetail.keys.find((item) => item.name === key)?.tableDisplayKey
+                      if (!tableDisplayKey) {
+                        rowValue[key] = rowData[key]
+                      } else {
+                        const keyPath = tableDisplayKey.split('.')
+                        let v: any = rowData
+                        keyPath.forEach((key) => {
+                          v = v[key]
+                        })
+                        rowValue[key] = v
+                      }
+                    }
+                  })
+                }
+                form.setValues(rowValue)
                 setOpen(true)
               }}
             >
@@ -220,7 +242,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
       ),
     })
     return tmp
-  }, [deleteRow, entityDetail, form])
+  }, [deleteRow, editSchema, entityDetail, form])
 
   const onFinish = useCallback(
     (allValues: any) => {
@@ -277,12 +299,12 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
         <FormRender
           displayType="row"
           form={form}
-          schema={editSchema}
+          schema={entityDetail?.editSchema ? JSON.parse(entityDetail.editSchema) : editSchema}
           onFinish={onFinish}
           removeHiddenData={false}
           widgets={{
             imageUpload: ImageUpload,
-            matchSelect: MatchSelect,
+            dateTimePicker: DateTimePicker,
           }}
         />
       </Modal>
