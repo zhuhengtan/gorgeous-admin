@@ -1,7 +1,5 @@
 ## 项目简介
 
-暂时请使用最新的release版本，main分支持续更新新功能，可能有些临时commit的东西，哈哈
-
 此项目用于快速初始化react+ts+antd的toB管理端前端项目，预置了登录、用户管理、权限管理模块。
 
 与[gorgeous-admin-server（node,koa）](https://github.com/zhuhengtan/gorgeous-admin-server)搭配使用体验更佳哦
