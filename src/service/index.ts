@@ -30,7 +30,7 @@ const gen = (params: string) => {
 
     const timestamp = (new Date()).getTime()
     data.timestamp = timestamp
-    data.sign = md5(`${timestamp}${process.env.REACT_APP_SIGN_KEY}`).toUpperCase()
+    data.sign = md5(`${timestamp}${import.meta.env.REACT_APP_SIGN_KEY}`).toUpperCase()
 
     const queryParams: QueryParams = {
       url,

@@ -72,6 +72,7 @@ module.exports = {
     'no-unused-vars': [0],
     "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
     "react-hooks/exhaustive-deps": "warn", // 检查 effect 的依赖
-    "react/destructuring-assignment": [0]
+    "react/destructuring-assignment": [0],
+    'linebreak-style': ['off', 'windows'],
   },
 };

@@ -51,20 +51,6 @@ export const getHrefParam = (): JsonObject => {
   return res
 }
 
-export const goToAccountChoosePage = (): void => {
-  const localInfo = JSON.parse(
-    localStorage.getItem('AD_DELIVER_PLATFORM_ACCOUNT') || '',
-  )
-  window.location.assign(
-    process.env.REACT_APP_AD_DELIVER_ACCOUNT_URL
-      ? process.env.REACT_APP_AD_DELIVER_ACCOUNT_URL.replace(
-        '{GAME_CODE}',
-        localInfo?.gameCode || 'yxs',
-      )
-      : '',
-  )
-}
-
 export type FunctionVariadic = (...args: any[]) => any
 
 export interface FormMoneyOptions {

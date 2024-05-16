@@ -4,7 +4,7 @@ import { defaultGetErrorMsg, showError, showMessage } from '@/utils'
 import { deleteCookie, getCookie } from '@/utils/cookie'
 
 const CONFIG = {
-  baseURL: process.env.API_HOST || '',
+  baseURL: import.meta.env.VITE_APP_URL || '',
   headers: {
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',

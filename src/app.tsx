@@ -8,7 +8,7 @@ import {
 import useGetAuthRoutes from '@/routes/auth-routes'
 
 import { Routes } from 'react-router'
-import theme from './antd-theme.json'
+import theme from '../theme/default.json'
 import { languageMap } from './utils'
 
 function App() {
