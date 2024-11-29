@@ -36,7 +36,7 @@ export const routeIsAccess = (path: string, auth: any) => {
 }
 
 export const getHrefParam = (): JsonObject => {
-  const location = decodeURIComponent((window?.microApp?.location || window.location).href)
+  const location = decodeURIComponent(window.location.href)
   if (location.indexOf('?') < 0) {
     return {}
   }

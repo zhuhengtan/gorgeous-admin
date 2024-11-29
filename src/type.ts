@@ -32,10 +32,3 @@ export interface AdminInfo {
   avatar: string
   status: number
 }
-
-export enum AppEnv {
-  dev = 'dev',
-  ready = 'ready',
-  pre = 'pre',
-  prd = 'prd',
-}
