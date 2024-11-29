@@ -1,11 +1,12 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
+    es6: true,
   },
   extends: [
     'plugin:react/recommended',
-    'airbnb',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -15,25 +16,25 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-    'react-hooks',
-  ],
+  plugins: ['react', 'react-hooks', '@typescript-eslint', 'simple-import-sort'],
   settings: {
     'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
       alias: {
         map: [['@', './src/']],
       },
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
-      typescript: {
-        project: './tsconfig.json',
+      react: {
+        pragma: 'React',
+        version: 'detect',
       },
     },
   },
   rules: {
-    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
     'no-nested-ternary': [0],
     'react/jsx-filename-extension': [
       2,
@@ -42,6 +43,7 @@ module.exports = {
       },
     ],
     'max-len': [0],
+    'react/react-in-jsx-scope': 0,
     'react/jsx-one-expression-per-line': 0,
     'react/state-in-constructor': 0,
     'react/self-closing-comp': 0,
@@ -59,20 +61,23 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 0,
     'jsx-a11y/alt-text': 0,
     'class-methods-use-this': 0,
-    'import/prefer-default-export': 0,
     'no-console': 0,
     'react/jsx-props-no-spreading': 0,
     'no-param-reassign': 0,
     'no-shadow': 0,
     'jsx-a11y/media-has-caption': 0,
-    'import/no-unresolved': [2, { ignore: ['react', 'react-dom'] }],
-    semi: ['error', 'never'],
+    // semi: ['error', 'never'],
     'react/function-component-definition': [0],
     'react/jsx-no-useless-fragment': [0],
     'no-unused-vars': [0],
-    "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
-    "react-hooks/exhaustive-deps": "warn", // 检查 effect 的依赖
-    "react/destructuring-assignment": [0],
+    'react-hooks/rules-of-hooks': 'error', // 检查 Hook 的规则
+    'react-hooks/exhaustive-deps': 'warn', // 检查 effect 的依赖
+    'react/destructuring-assignment': [0],
     'linebreak-style': ['off', 'windows'],
+    // 'simple-import-sort/imports': 'warn',
+    // 'simple-import-sort/exports': 'warn',
+    '@typescript-eslint/no-empty-function': 'warn',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-inferrable-types': 'warn',
   },
 };

@@ -16,8 +16,8 @@ interface Props {
 const AuthFragment: React.FC<Props> = (props: Props) => {
   const { otherConditions, authKey, children } = props
   const adminAuth = useContext(AdminAuthContext)
-  const haveAuth = adminAuth[window.location.pathname]
-    && adminAuth[window.location.pathname].filter((item) => item.operationKey === authKey).length > 0
+  const haveAuth = adminAuth[(window?.microApp?.location || window.location).pathname]
+    && adminAuth[(window?.microApp?.location || window.location).pathname].filter((item) => item.operationKey === authKey).length > 0
 
   return <>{otherConditions && haveAuth && children}</>
 }

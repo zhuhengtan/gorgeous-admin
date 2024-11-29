@@ -1,8 +1,18 @@
 {
+  "include": [
+    "src/types/*.d.ts",
+    "src",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "baseUrl": "src",
+    "rootDir": "./",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "target": "es5",
     "lib": [
@@ -14,7 +24,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    // "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
@@ -23,9 +33,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"]
-  },
-  "include": [
-    "src"
-  ]
+    "types": [
+      "vite/client"
+    ],
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+  }
 }

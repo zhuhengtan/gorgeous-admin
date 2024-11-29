@@ -43,10 +43,10 @@ axiosInstance.interceptors.response.use(
       deleteCookie('token')
       localStorage.clear()
       showError(res.message)
-      window.location.assign('/login')
+      (window?.microApp?.location || window.location).assign('/login')
     } else if (res.code !== 200) {
       if (res.code === 10404) {
-        window.location.assign('/access-deny')
+        (window?.microApp?.location || window.location).assign('/access-deny')
       } else {
         showError(res.message)
         throw new Error(JSON.stringify(res))
@@ -60,7 +60,7 @@ axiosInstance.interceptors.response.use(
     showError(defaultGetErrorMsg(error))
     const { status } = error.response
     if (status === 401) {
-      window.location.assign('/login')
+      (window?.microApp?.location || window.location).assign('/login')
     }
     return Promise.reject(error)
   },

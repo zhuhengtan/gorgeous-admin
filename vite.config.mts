@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 12138,
+      port: 12580,
       open: true,
       hmr: true,
       // watch: {},
@@ -61,6 +61,9 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+      },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
       },
     },
     preview: {
