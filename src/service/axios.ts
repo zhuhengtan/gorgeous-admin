@@ -21,7 +21,7 @@ axiosInstance.interceptors.request.use(
     }
     let token = getCookie('token')
     if (!token) {
-      token = localStorage.getItem('token') || ''
+      token = localStorage.getItem('TOKEN')?.replaceAll('"', '') || ''
     }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
