@@ -22,7 +22,7 @@ interface Props {
 }
 
 const OperationEdit: React.FC<Props> = (props: Props) => {
-  const { value, onChange, onDeleteOperation } = props
+  const { value = [], onChange, onDeleteOperation } = props
 
   const { t } = useTranslation()
 
@@ -84,17 +84,18 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
     },
     {
       title: t('Operation api'),
-      dataIndex: 'relatedApi',
+      dataIndex: 'relatedApis',
       width: 300,
       render: (text: string, row: Operation) => (
         <Select
           style={{ width: 280 }}
-          bordered={false}
+          variant="borderless"
           size="small"
           showSearch
-          value={row.relatedApi}
+          value={row.relatedApis}
           loading={loading}
-          onChange={(e) => onChangeValue(row.id!, 'relatedApi', e)}
+          mode="multiple"
+          onChange={(e) => onChangeValue(row.id!, 'relatedApis', e)}
         >
           {apiList && apiList.map((api) => (
             <Select.Option key={api} value={api}>{api}</Select.Option>
@@ -120,7 +121,7 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       id: `tmp_${v4()}`,
       name: '',
       key: '',
-      relatedApi: '',
+      relatedApis: [],
     }, ...(value || [])]
     onChange!(tmp)
   }, [value, onChange])
@@ -150,12 +151,6 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       />
     </Col>
   )
-}
-
-OperationEdit.defaultProps = {
-  value: [],
-  onChange: (val) => { },
-  onDeleteOperation: () => {},
 }
 
 export default React.memo(OperationEdit)

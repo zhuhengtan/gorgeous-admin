@@ -90,7 +90,8 @@
 │   │       ├── logo.tsx
 │   │       └── second-layout.tsx
 │   ├── context
-│   │   └── AdminAuthContext.ts
+│   │   ├── auth-context-provider.ts
+│   │   └── user-info-provider.ts
 │   ├── images
 │   │   └── login.jpeg
 │   ├── index.less

@@ -1,49 +1,16 @@
 /* eslint-disable no-continue */
 import routes from '@/routes'
-import { CustomRouteObject, AdminInfo } from '@/type'
 import { useNavigate, useRoutes, RouteObject } from 'react-router'
 
-import React, {
-  useEffect, useState, useMemo, useCallback,
+import {
+  useMemo, useCallback,
 } from 'react'
 import { MenuProps } from 'antd'
-import { useLocalStorageState, useRequest } from 'ahooks'
-import api from '@/service'
-import { AdminAuthContext } from '@/context/AdminAuthContext'
+import { useAllAuth } from '@/context/auth-context-provider'
 
 export default function useGetAuthRoutes() {
   const navigate = useNavigate()
-  const [adminAuth, setAdminAuth] = useState<{
-    [key: string]: {
-      operationKey: string;
-      operationName: string;
-    };
-  }>({})
-  const [finalAuth, setAuth] = useLocalStorageState('AUTH', {})
-  // 如果没有登录，跳转登录页
-  const [token] = useLocalStorageState('TOKEN', {
-    defaultValue: '',
-  })
-  const [admin] = useLocalStorageState('USER_INFO')
-
-  const { run: getAdminAuth } = useRequest(
-    () => api.getAdminAuth({ id: (admin as AdminInfo).id }),
-    {
-      cacheKey: 'USER_AUTH',
-      manual: true,
-      onSuccess(e: any) {
-        setAdminAuth(e.auth)
-        setAuth(e.auth)
-      },
-    },
-  )
-
-  useEffect(() => {
-    if (token) {
-      getAdminAuth()
-    }
-  }, [getAdminAuth, token])
-
+  const allAuth = useAllAuth()
   // 这里直接过滤掉没有权限的path
   const goToPage = useCallback(
     (menu: CustomRouteObject) => {
@@ -54,7 +21,7 @@ export default function useGetAuthRoutes() {
   )
 
   const authedRoutes = useMemo<CustomRouteObject[]>(() => {
-    if (Object.keys(adminAuth).length <= 0) {
+    if (Object.keys(allAuth).length <= 0) {
       return routes
     }
     const filterRoutersByPermission = (
@@ -72,7 +39,7 @@ export default function useGetAuthRoutes() {
         } else {
           if (
             obj.checkAuth
-            && Object.prototype.hasOwnProperty.call(adminAuth, obj.path as string)
+            && Object.prototype.hasOwnProperty.call(allAuth, obj.path as string)
           ) {
             arr.push(obj)
           }
@@ -84,7 +51,7 @@ export default function useGetAuthRoutes() {
       return arr
     }
     return filterRoutersByPermission(routes)
-  }, [adminAuth])
+  }, [allAuth])
 
   const menuList = useMemo<MenuProps['items']>(() => {
     const formatMenus = (routers: CustomRouteObject[]): MenuProps['items'] => {
@@ -95,7 +62,7 @@ export default function useGetAuthRoutes() {
           continue
         }
         if (obj.checkAuth) {
-          if (Object.hasOwn(adminAuth, obj.path as string)) {
+          if (Object.hasOwn(allAuth, obj.path as string)) {
             arr.push({
               key: obj.path as string,
               icon: obj.icon,
@@ -136,7 +103,7 @@ export default function useGetAuthRoutes() {
       return arr
     }
     return formatMenus(routes)
-  }, [goToPage, adminAuth])
+  }, [goToPage, allAuth])
 
   const elements = useRoutes(authedRoutes as RouteObject[])
 
@@ -144,9 +111,7 @@ export default function useGetAuthRoutes() {
     authedRoutes,
     menuList,
     authRoutes: (
-      <AdminAuthContext.Provider value={finalAuth as any}>
-        {elements}
-      </AdminAuthContext.Provider>
+      elements
     ),
   }
 }

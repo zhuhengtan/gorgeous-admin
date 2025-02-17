@@ -1,11 +1,12 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
+    es6: true,
   },
   extends: [
     'plugin:react/recommended',
-    'airbnb',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -18,22 +19,29 @@ module.exports = {
   plugins: [
     'react',
     'react-hooks',
+    '@typescript-eslint',
+    'simple-import-sort'
   ],
   settings: {
     'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
       alias: {
-        map: [['@', './src/']],
+        map: [
+          ['@', './src/']
+        ],
       },
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
-      typescript: {
-        project: './tsconfig.json',
+      react: {
+        pragma: 'React',
+        version: 'detect',
       },
     },
   },
   rules: {
-    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
     'no-nested-ternary': [0],
     'react/jsx-filename-extension': [
       2,
@@ -65,7 +73,6 @@ module.exports = {
     'no-param-reassign': 0,
     'no-shadow': 0,
     'jsx-a11y/media-has-caption': 0,
-    'import/no-unresolved': [2, { ignore: ['react', 'react-dom'] }],
     semi: ['error', 'never'],
     'react/function-component-definition': [0],
     'react/jsx-no-useless-fragment': [0],
@@ -74,5 +81,6 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn", // 检查 effect 的依赖
     "react/destructuring-assignment": [0],
     'linebreak-style': ['off', 'windows'],
+    "react/require-default-props": "off"
   },
 };

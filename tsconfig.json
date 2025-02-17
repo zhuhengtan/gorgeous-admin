@@ -1,6 +1,14 @@
 {
+  "include": [
+    "src/types/*.d.ts",
+    "src",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
   "compilerOptions": {
     "baseUrl": "src",
+    "rootDir": "./",
     "paths": {
       "@/*": ["./*"]
     },
@@ -25,7 +33,4 @@
     "jsx": "react-jsx",
     "types": ["vite/client"]
   },
-  "include": [
-    "src"
-  ]
 }

@@ -2,7 +2,7 @@ export interface Operation {
   id?: number | string
   name: string
   key: string
-  relatedApi: string
+  relatedApis: string[]
   createdAt?: string
 }
 

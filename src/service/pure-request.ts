@@ -6,7 +6,7 @@ import {
 import axios from './axios'
 
 export default function pureReqeust(api: string, data?: QueryData, options?: AxiosRequestConfig): Promise<unknown> {
-  let url: string = ''
+  let url = ''
   let method: QueryMethod = 'GET'
 
   const paramsArray = api.split(' ') as ParamsArray

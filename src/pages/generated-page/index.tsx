@@ -1,25 +1,34 @@
 import {
-  Button, Modal, Popconfirm, Space, Table, TableColumnType,
+  Button,
+  Modal,
+  Popconfirm,
+  Space,
+  Tooltip,
 } from 'antd'
 import React, {
   NamedExoticComponent,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
+import pureReqeust from '@/service/pure-request'
 import { usePagination, useRequest } from 'ahooks'
-import FormRender, { FRProps, useForm } from 'form-render'
-import { ColumnsType } from 'antd/es/table'
-import pureRequest from '@/service/pure-request'
 import AuthFragment from '@/components/auth-fragment'
 import Api from '@/service'
-import { AdminAuthContext } from '@/context/AdminAuthContext'
-import ImageUpload from '@/components/image-upload'
-import DateTimePicker from '@/components/date-time-picker'
+import FormRender, { FRProps, useForm } from 'form-render'
+import TableRender, { SearchProps, TableContext } from 'table-render'
+import { ColumnsType } from 'antd/es/table'
+import ImageUpload from '@/components/upload'
+import { CheckOutlined, CloseOutlined, SettingFilled } from '@ant-design/icons'
+import EntitySelect from '@/components/entity-select'
+import EditModal from '../auth/generate-server-crud/edit-modal'
+import { useAllAuth } from '@/context/auth-context-provider'
+import FileManageList from '@/components/file-manage-list'
+import Richtext from '@/components/richtext'
 
-const WIDGETS_MAP: {
+export const WIDGETS_MAP: {
   [key in any]: NamedExoticComponent<{
     readOnly?: boolean;
     value?: any;
@@ -27,13 +36,20 @@ const WIDGETS_MAP: {
   }>;
 } = {
   imageUpload: ImageUpload as NamedExoticComponent,
+  entitySelect: EntitySelect as NamedExoticComponent,
+  fileManageList: FileManageList as NamedExoticComponent,
+  richtext: Richtext as NamedExoticComponent,
 }
 
 interface Props {
   entityName: string;
 }
 
-interface EntityDetailKey {
+type RowData = {
+  id: number;
+} & JsonObject;
+
+export interface EntityDetailField {
   name: string;
   type: string;
   title: string;
@@ -41,24 +57,16 @@ interface EntityDetailKey {
   editable: boolean;
   columnName: string;
   columnType: string;
-  editComponent: string;
   columnDefaultValue: string;
-  tableDataIndex: string;
-  tableDisplayKey: string;
-  valueKey: string;
+  displayKeyMap?: string;
+  valueKeyMap?: string;
+  editSchema?: Partial<FRProps['schema']>;
+  searchSchema?: Partial<SearchProps<RowData>['schema']>;
 }
-
-type RowData = {
-  id: number
-} & {
-  [key in string]: any
-}
-
-interface EntityDetail {
+export interface EntityDetail {
   id: number;
   entityName: string;
-  keys: EntityDetailKey[];
-  editSchema?: string;
+  fields: EntityDetailField[];
   createdAt: string;
   deletedAt: string;
 }
@@ -68,24 +76,23 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
 
   const path = window.location.pathname
   // 从auth里拿接口
-  const authRoutes = useContext(AdminAuthContext)
-
+  const allAuth = useAllAuth()
   const [open, setOpen] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
 
   const apis = useMemo(() => {
     const tmp: { [key: string]: string } = {}
-    authRoutes[path].forEach((authRoute) => {
-      tmp[authRoute.operationKey] = authRoute.relatedApi
+    allAuth[path].forEach((authRoute) => {
+      tmp[authRoute.operationKey] = authRoute.relatedApis[0]
     })
     return tmp
-  }, [authRoutes, path])
+  }, [allAuth, path])
   const form = useForm()
 
   const { data: entityDetail, run: getGeneratedEntityDetail } = useRequest<
     EntityDetail,
     { entityName: string }[]
-  >(() => Api.getGeneratedEntityDetail({ entityName }), {
+  >(() => Api.getCommonGeneratedEntityDetail({ entityName }), {
     manual: true,
   })
   useEffect(() => {
@@ -93,48 +100,43 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [data, setData] = useState([])
-  const { run: getDataList, pagination } = usePagination(
-    ({ current, pageSize }) => pureRequest(apis.view, { page: current, pageSize }) as Promise<any>,
+  const {
+    runAsync: getDataListAsync,
+  } = usePagination(
+    ({ current, pageSize }) => pureReqeust(apis.view, { current, pageSize }) as Promise<any>,
     {
       manual: true,
-      onSuccess(res) {
-        setData(res.list)
-      },
     },
   )
 
-  const { run: create, loading: creating } = useRequest(
-    (params) => pureRequest(apis.create, params),
+  const { run: create } = useRequest(
+    (params) => pureReqeust(apis.create, params),
     {
       manual: true,
-      onSuccess(res) {
+      onSuccess() {
         setOpen(false)
-        getDataList({ current: 1, pageSize: pagination.pageSize })
+        tableRef.current?.refresh()
       },
     },
   )
 
   const { run: update } = useRequest(
-    (params) => pureRequest(apis.update, params),
+    (params) => pureReqeust(apis.update, params),
     {
       manual: true,
       onSuccess() {
         setOpen(false)
-        getDataList({
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-        })
+        tableRef.current?.refresh()
       },
     },
   )
 
   const { run: deleteRow } = useRequest(
-    (id) => pureRequest(apis.delete, { id }),
+    (id) => pureReqeust(apis.delete, { id }),
     {
       manual: true,
       onSuccess() {
-        getDataList({ current: 1, pageSize: 10 })
+        tableRef.current?.refresh()
       },
     },
   )
@@ -146,47 +148,98 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
         type: 'number',
       },
     }
-    entityDetail?.keys.forEach((keyItem) => {
-      properties[keyItem.name] = {
-        title: keyItem.title,
-        type: keyItem.type,
-        widget: keyItem.editComponent,
-        disabled: !keyItem.editable,
-        default: keyItem.columnDefaultValue,
-        tooltip: keyItem.comment,
-      }
-    })
+    if (entityDetail?.fields && entityDetail?.fields.length > 0) {
+      entityDetail?.fields.forEach((field) => {
+        properties[field.name] = {
+          title: field.title,
+          type: field.type, // TODO 判断type string、number、枚举
+          disabled: !field.editable,
+          default:
+            field.type === 'number'
+              ? Number(field.columnDefaultValue) || undefined
+              : field.columnDefaultValue,
+          tooltip: field.comment,
+          ...(field.editSchema || {}),
+          props: {
+            allowClear: true,
+            ...(field?.editSchema?.props || {}),
+          },
+        }
+      })
+    }
     return {
       type: 'object',
       properties,
     }
   }, [entityDetail])
 
-  const columns = useMemo<ColumnsType<any>>(() => {
+  const columns = useMemo<ColumnsType<RowData>>(() => {
     if (!entityDetail) {
       return []
     }
-    const tmp: ColumnsType<any> = entityDetail?.keys.map((keyItem) => ({
-      dataIndex: keyItem.tableDataIndex || keyItem.name,
-      title: keyItem.title,
-      render: (value, row) => {
-        if (keyItem.tableDisplayKey) {
-          const keyPath = keyItem.tableDisplayKey.split('.')
-          let v: any = row
-          keyPath.forEach((key) => {
-            v = v[key]
-          })
-          return <span>{v}</span>
-        }
-        if (keyItem.editComponent) {
-          return React.createElement(WIDGETS_MAP[keyItem.editComponent], {
-            readOnly: true,
-            value,
-          })
-        }
-        return <span>{value}</span>
-      },
-    }))
+    const tmp: ColumnsType<RowData> = entityDetail?.fields.map(
+      (field: EntityDetailField) => ({
+        dataIndex: field.name,
+        title: (
+          <Tooltip title={field.comment}>
+            <span>{field.title}</span>
+          </Tooltip>
+        ),
+        tooltip: field.comment,
+        render: (value, row) => {
+          if (value === undefined || value === '') {
+            return <></>
+          }
+          if (field.type === 'boolean') {
+            return (
+              <>
+                {value ? (
+                  <CheckOutlined style={{ color: 'green' }} />
+                ) : (
+                  <CloseOutlined style={{ color: 'red' }} />
+                )}
+              </>
+            )
+          }
+          if (field.displayKeyMap) {
+            const keyArr = field.displayKeyMap.split('.')
+            let t: any = row
+            keyArr.forEach((key) => {
+              t = t[key]
+            })
+            return <span>{t}</span>
+          }
+          if (field.editSchema?.readOnlyWidget) {
+            switch (field.editSchema?.readOnlyWidget) {
+              case 'select':
+              case 'radio':
+                if (field.editSchema?.props) {
+                  return (
+                    <span>
+                      {
+                        field.editSchema?.props?.options?.find(
+                          // eslint-disable-next-line eqeqeq
+                          (item: { value: any }) => item.value == value,
+                        )?.label
+                      }
+                    </span>
+                  )
+                }
+                return <span>-</span>
+              default:
+                return React.createElement(
+                  WIDGETS_MAP[field.editSchema?.readOnlyWidget],
+                  {
+                    readOnly: true,
+                    value,
+                  },
+                )
+            }
+          }
+          return <span>{value}</span>
+        },
+      }),
+    )
     tmp.splice(0, 0, {
       dataIndex: 'id',
       title: 'ID',
@@ -202,26 +255,19 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
               type="primary"
               onClick={() => {
                 setIsEdit(true)
-                const rowValue: RowData = { id: rowData.id }
-                const schema: FRProps['schema'] = entityDetail?.editSchema ? JSON.parse(entityDetail.editSchema) : editSchema
-                if (schema.properties && Object.keys(schema.properties).length > 0) {
-                  Object.keys(schema.properties).forEach((key) => {
-                    if (!schema.properties![key].disabled) {
-                      const tableDisplayKey = entityDetail.keys.find((item) => item.name === key)?.tableDisplayKey
-                      if (!tableDisplayKey) {
-                        rowValue[key] = rowData[key]
-                      } else {
-                        const keyPath = tableDisplayKey.split('.')
-                        let v: any = rowData
-                        keyPath.forEach((key) => {
-                          v = v[key]
-                        })
-                        rowValue[key] = v
-                      }
-                    }
-                  })
-                }
-                form.setValues(rowValue)
+                const tmpFormData = { ...rowData }
+                entityDetail?.fields.forEach((item) => {
+                  if (item.valueKeyMap) {
+                    const keyArr = item.valueKeyMap.split('.')
+                    let t: any = rowData
+                    keyArr.forEach((key) => {
+                      t = t[key]
+                    })
+                    tmpFormData[item.name] = t
+                  }
+                })
+                console.log(tmpFormData)
+                form.setValues(tmpFormData)
                 setOpen(true)
               }}
             >
@@ -242,7 +288,7 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
       ),
     })
     return tmp
-  }, [deleteRow, editSchema, entityDetail, form])
+  }, [deleteRow, entityDetail, form])
 
   const onFinish = useCallback(
     (allValues: any) => {
@@ -255,12 +301,33 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
     [create, update, isEdit],
   )
 
-  useEffect(() => {
-    getDataList({ current: 1, pageSize: 10 })
-  }, [getDataList])
+  const tableRef = useRef<TableContext>()
 
   return (
     <>
+      <AuthFragment authKey="edit-entity">
+        <EditModal
+          isEdit
+          record={entityDetail}
+          buttonContainerStyle={{
+            position: 'absolute',
+            cursor: 'pointer',
+            right: 0,
+            top: 0,
+            borderTop: '40px solid #ca0813',
+            borderLeft: '40px solid transparent',
+          }}
+        >
+          <SettingFilled
+            style={{
+              color: 'white',
+              position: 'absolute',
+              left: -20,
+              top: -34,
+            }}
+          />
+        </EditModal>
+      </AuthFragment>
       <AuthFragment authKey="create">
         <Button
           type="primary"
@@ -274,16 +341,21 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
         </Button>
       </AuthFragment>
       <AuthFragment authKey="view">
-        <Table
+        <TableRender
+          size="small"
+          ref={tableRef as any}
+          style={{ marginTop: 10, padding: 0 }}
           rowKey="id"
-          dataSource={data}
-          columns={columns}
-          style={{ marginTop: 10 }}
-          pagination={pagination}
+          columns={columns as any}
+          request={async (params) => {
+            const res = await getDataListAsync(params)
+            return { data: res.list, total: res.total }
+          }}
         />
       </AuthFragment>
       <Modal
         title={isEdit ? '编辑' : '新增'}
+        width="60%"
         open={open}
         onCancel={() => setOpen(false)}
         destroyOnClose
@@ -299,13 +371,10 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
         <FormRender
           displayType="row"
           form={form}
-          schema={entityDetail?.editSchema ? JSON.parse(entityDetail.editSchema) : editSchema}
+          schema={editSchema}
           onFinish={onFinish}
           removeHiddenData={false}
-          widgets={{
-            imageUpload: ImageUpload,
-            dateTimePicker: DateTimePicker,
-          }}
+          widgets={WIDGETS_MAP}
         />
       </Modal>
     </>

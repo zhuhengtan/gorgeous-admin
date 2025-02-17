@@ -101,7 +101,7 @@ const Pages: React.FC = () => {
             id: `tmp_${v4()}`,
             name: '查看',
             key: 'view',
-            relatedApi: '',
+            relatedApis: [],
           }],
           content: null,
           entityName: selectedLocalRoute?.entityName,
@@ -238,7 +238,7 @@ const Pages: React.FC = () => {
       })
     } else {
       let ar: any = []
-      let i: number = 0
+      let i = 0
       searchRoute(tmpRoutes, dropId, (item: any, index: number, arr: any) => {
         ar = arr
         i = index
@@ -388,6 +388,7 @@ const Pages: React.FC = () => {
         <Form
           form={form}
           schema={schema}
+          removeHiddenData={false}
           widgets={{
             operationEdit: OperationEdit,
           }}

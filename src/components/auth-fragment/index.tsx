@@ -1,11 +1,8 @@
 import React, {
   ReactNode,
-  ReactFragment,
-  ReactPortal,
-  useContext,
 } from 'react'
 
-import { AdminAuthContext } from '@/context/AdminAuthContext'
+import { useAllAuth } from '@/context/auth-context-provider'
 
 interface Props {
   otherConditions?: boolean
@@ -15,9 +12,9 @@ interface Props {
 
 const AuthFragment: React.FC<Props> = (props: Props) => {
   const { otherConditions, authKey, children } = props
-  const adminAuth = useContext(AdminAuthContext)
-  const haveAuth = adminAuth[window.location.pathname]
-    && adminAuth[window.location.pathname].filter((item) => item.operationKey === authKey).length > 0
+  const allAuth = useAllAuth()
+  const haveAuth = allAuth[window.location.pathname]
+    && allAuth[window.location.pathname].filter((item) => item.operationKey === authKey).length > 0
 
   return <>{otherConditions && haveAuth && children}</>
 }

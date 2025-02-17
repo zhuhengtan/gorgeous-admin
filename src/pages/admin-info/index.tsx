@@ -73,7 +73,9 @@ const AdminInfoComponent: React.FC = () => {
     (data) => changeAvatarRequest(data),
     {
       manual: true,
-      onSuccess() { },
+      onSuccess() { 
+        message.success('头像更换成功')
+      },
     },
   )
 

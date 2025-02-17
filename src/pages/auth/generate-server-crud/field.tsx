@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  Input, Table, Button, Radio, Switch, Col,
+  Input, Table, Button, Switch, Col, Modal,
 } from 'antd'
-import { CloseOutlined, DeleteOutlined } from '@ant-design/icons'
+import { CloseOutlined, DeleteOutlined, EditFilled } from '@ant-design/icons'
 import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash'
 import {
@@ -23,6 +23,7 @@ import {
 } from '@dnd-kit/sortable'
 
 import { CSS } from '@dnd-kit/utilities'
+import { JsonEditor } from 'json-edit-react'
 import { FieldItem } from '../types'
 
 interface Props {
@@ -66,7 +67,7 @@ const Row = (props: RowProps) => {
 }
 
 const Fields: React.FC<Props> = (props: Props) => {
-  const { value, onChange } = props
+  const { value = [], onChange } = props
   const { t } = useTranslation()
 
   const onChangeValue = useCallback(
@@ -79,7 +80,7 @@ const Fields: React.FC<Props> = (props: Props) => {
         }
         return false
       })
-      onChange!(tmp)
+      onChange?.(tmp)
     },
     [value, onChange],
   )
@@ -89,13 +90,15 @@ const Fields: React.FC<Props> = (props: Props) => {
       const tmp = (cloneDeep(value || []) as FieldItem[]).filter(
         (row) => row.id !== id,
       )
-      onChange!(tmp)
+      onChange?.(tmp)
     },
     [value, onChange],
   )
 
-  const onClickDeleteField = useCallback((id: number | string) => {}, [])
+  const onClickDeleteField = useCallback((id: number | string) => id, [])
 
+  const [editJsonOpen, setEditJsonOpen] = useState<boolean>(false)
+  const [tmpSelectObj, setTmpSelectObj] = useState({ id: '', k: '', v: {} })
   const columns = useMemo(() => {
     const config = [
       {
@@ -130,24 +133,6 @@ const Fields: React.FC<Props> = (props: Props) => {
       },
       {
         type: 'input',
-        title: 'table dataIndex',
-        key: 'tableDataIndex',
-        width: 100,
-      },
-      {
-        type: 'input',
-        title: '显示的keyPath',
-        key: 'tableDisplayKey',
-        width: 100,
-      },
-      {
-        type: 'input',
-        title: '编辑时的keyPath',
-        key: 'valueKey',
-        width: 100,
-      },
-      {
-        type: 'input',
         title: t('Configuration item comment'),
         key: 'comment',
         width: 100,
@@ -166,9 +151,27 @@ const Fields: React.FC<Props> = (props: Props) => {
       },
       {
         type: 'input',
-        title: t('Configuration item edit component'),
-        key: 'editComponent',
+        title: t('Configuration item display key map'),
+        key: 'displayKeyMap',
         width: 100,
+      },
+      {
+        type: 'input',
+        title: t('Configuration item value key map'),
+        key: 'valueKeyMap',
+        width: 100,
+      },
+      {
+        type: 'json',
+        title: t('Configuration item edit component props'),
+        key: 'editSchema',
+        width: 80,
+      },
+      {
+        type: 'json',
+        title: t('Configuration item search component props'),
+        key: 'searchSchema',
+        width: 80,
       },
     ]
     return [
@@ -181,7 +184,7 @@ const Fields: React.FC<Props> = (props: Props) => {
             case 'input':
               return (
                 <Input
-                  bordered={false}
+                  variant='borderless'
                   size="small"
                   value={(row as any)[item.key]}
                   onChange={(e) => onChangeValue(row.id, item.key, e.currentTarget.value)}
@@ -192,6 +195,21 @@ const Fields: React.FC<Props> = (props: Props) => {
                 <Switch
                   defaultChecked
                   onChange={(e) => onChangeValue(row.id, item.key, e)}
+                />
+              )
+            case 'json':
+              return (
+                <Button
+                  type="link"
+                  icon={<EditFilled />}
+                  onClick={() => {
+                    setTmpSelectObj({
+                      id: row.id,
+                      k: item.key,
+                      v: (row as any)[item.key],
+                    })
+                    setEditJsonOpen(true)
+                  }}
                 />
               )
             default:
@@ -237,10 +255,13 @@ const Fields: React.FC<Props> = (props: Props) => {
         type: '',
         editable: true,
         editComponent: '',
+        extraSchema: {},
+        displayKeyMap: '',
+        valueKeyMap: '',
       },
       ...(value || []),
     ]
-    onChange!(tmp)
+    onChange?.(tmp)
   }, [onChange, value])
 
   const sensors = useSensors(
@@ -257,48 +278,69 @@ const Fields: React.FC<Props> = (props: Props) => {
       const tmp: FieldItem[] = JSON.parse(JSON.stringify(value || []))
       const activeIndex = tmp.findIndex((row) => row.id === active.id)
       const overIndex = tmp.findIndex((row) => row.id === over?.id)
-      onChange!(arrayMove(tmp, activeIndex, overIndex))
+      onChange?.(arrayMove(tmp, activeIndex, overIndex))
     }
   }
 
   return (
-    <Col>
-      <Button size="small" type="primary" onClick={onClickAddField}>
-        {t('Add field')}
-      </Button>
-      <DndContext
-        sensors={sensors}
-        modifiers={[restrictToVerticalAxis]}
-        onDragEnd={onDragEnd}
-      >
-        <SortableContext
-          // rowKey array
-          items={(value || []).map((i) => i.id)}
-          strategy={verticalListSortingStrategy}
+    <>
+      <Col>
+        <Button size="small" type="primary" onClick={onClickAddField}>
+          {t('Add field')}
+        </Button>
+        <DndContext
+          sensors={sensors}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={onDragEnd}
         >
-          <Table
-            rowKey="id"
-            components={{
-              body: {
-                row: Row,
-              },
-            }}
-            style={{ marginTop: 10 }}
-            size="small"
-            scroll={{ y: 500 }}
-            pagination={false}
-            columns={columns}
-            dataSource={value}
-          />
-        </SortableContext>
-      </DndContext>
-    </Col>
+          <SortableContext
+            // rowKey array
+            items={(value || []).map((i) => i.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Table
+              rowKey="id"
+              components={{
+                body: {
+                  row: Row,
+                },
+              }}
+              style={{ marginTop: 10 }}
+              size="small"
+              scroll={{ y: 500 }}
+              pagination={false}
+              columns={columns}
+              dataSource={value}
+            />
+          </SortableContext>
+        </DndContext>
+      </Col>
+      <Modal
+        title={t('Edit json')}
+        open={editJsonOpen}
+        maskClosable={false}
+        onCancel={() => {
+          setEditJsonOpen(false)
+        }}
+        onOk={() => {
+          onChangeValue(tmpSelectObj.id, tmpSelectObj.k, tmpSelectObj.v)
+          setEditJsonOpen(false)
+        }}
+      >
+        <JsonEditor
+          rootName="extraSchema"
+          data={tmpSelectObj.v || {}}
+          onUpdate={({ newValue }) => {
+            setTmpSelectObj({
+              id: tmpSelectObj.id,
+              k: tmpSelectObj.k,
+              v: newValue as any,
+            })
+          }}
+        />
+      </Modal>
+    </>
   )
-}
-
-Fields.defaultProps = {
-  value: [],
-  onChange: (v) => {},
 }
 
 export default React.memo(Fields)
