@@ -40,7 +40,7 @@ const FilePreview = ({ url }: { url: string }) => {
 }
 
 const CustomUpload: React.FC<Props> = (props) => {
-  const { readOnly, value, onChange } = props
+  const { readOnly = false, value, onChange } = props
 
   console.log(value)
 
@@ -88,10 +88,6 @@ const CustomUpload: React.FC<Props> = (props) => {
       </Flex>
     </Upload>
   )
-}
-
-CustomUpload.defaultProps = {
-  readOnly: false,
 }
 
 export default React.memo(CustomUpload)

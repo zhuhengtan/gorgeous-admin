@@ -183,8 +183,4 @@ const AddAdminForm: React.FC<Props> = (props: Props) => {
   )
 }
 
-AddAdminForm.defaultProps = {
-  onSuccess: () => {},
-}
-
 export default React.memo(AddAdminForm)

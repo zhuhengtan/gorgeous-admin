@@ -1,6 +1,8 @@
 import { ApiList } from './type'
 
 const apiList: ApiList = {
+  getCommonGeneratedEntityDetail: 'GET /api/b/common/generated-entity',
+  
   login: 'POST /api/b/auth/login',
   getAdminAuth: 'GET /api/b/auth/admin-auth',
 

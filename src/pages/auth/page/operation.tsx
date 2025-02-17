@@ -72,14 +72,14 @@ const OperationEdit: React.FC<Props> = (props: Props) => {
       title: t('Operation name'),
       dataIndex: 'name',
       render: (text: string, row: Operation) => (
-        <Input bordered={false} size="small" value={row.name} onChange={(e) => onChangeValue(row.id!, 'name', e.currentTarget.value)} />
+        <Input variant='borderless' size="small" value={row.name} onChange={(e) => onChangeValue(row.id!, 'name', e.currentTarget.value)} />
       ),
     },
     {
       title: t('Operation key'),
       dataIndex: 'key',
       render: (text: string, row: Operation) => (
-        <Input bordered={false} size="small" value={row.key} onChange={(e) => onChangeValue(row.id!, 'key', e.currentTarget.value)} />
+        <Input variant='borderless' size="small" value={row.key} onChange={(e) => onChangeValue(row.id!, 'key', e.currentTarget.value)} />
       ),
     },
     {

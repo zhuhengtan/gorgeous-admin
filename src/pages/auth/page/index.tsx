@@ -80,6 +80,7 @@ const Pages: React.FC = () => {
           hidden: selectedLocalRoute?.hidden || false,
           checkAuth: selectedLocalRoute?.checkAuth || false,
           pageType: selectedLocalRoute?.pageType || 0,
+          entityName: selectedLocalRoute?.entityName,
           operations: res.operations || [],
           content: res.content || null,
         }
@@ -324,6 +325,7 @@ const Pages: React.FC = () => {
         hidden: route.hidden || false,
         checkAuth: route.checkAuth || false,
         pageType: route.pageType || 0,
+        entityName: route.entityName || '',
         operations: [],
         content: null,
       }

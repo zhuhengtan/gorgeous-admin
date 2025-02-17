@@ -120,7 +120,7 @@ interface Props {
 }
 
 const Editor:React.FC<Props> = (props: Props) => {
-  const { value, maxLength, onChange } = props
+  const { value, maxLength = 10000, onChange } = props
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -165,10 +165,6 @@ const Editor:React.FC<Props> = (props: Props) => {
       </div>
     </div>
   )
-}
-
-Editor.defaultProps = {
-  maxLength: 10000,
 }
 
 export default React.memo(Editor)

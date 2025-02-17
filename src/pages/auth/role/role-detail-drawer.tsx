@@ -51,7 +51,7 @@ interface RoleDetail {
 
 const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
   const {
-    id, visible, setVisible, onSuccess,
+    id = 0, visible, setVisible, onSuccess,
   } = props
   const { t } = useTranslation()
   const [form] = Form.useForm()
@@ -291,10 +291,6 @@ const RoleDetailDrawer: React.FC<Props> = (props: Props) => {
       </Spin>
     </Drawer>
   )
-}
-
-RoleDetailDrawer.defaultProps = {
-  id: 0,
 }
 
 export default React.memo(RoleDetailDrawer)

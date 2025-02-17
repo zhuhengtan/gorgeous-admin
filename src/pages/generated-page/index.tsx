@@ -73,6 +73,7 @@ export interface EntityDetail {
 
 const GeneratedPage: React.FC<Props> = (props: Props) => {
   const { entityName } = props
+  console.log(entityName)
 
   const path = window.location.pathname
   // 从auth里拿接口
@@ -266,7 +267,6 @@ const GeneratedPage: React.FC<Props> = (props: Props) => {
                     tmpFormData[item.name] = t
                   }
                 })
-                console.log(tmpFormData)
                 form.setValues(tmpFormData)
                 setOpen(true)
               }}
